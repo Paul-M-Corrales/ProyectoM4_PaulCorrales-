@@ -10,7 +10,7 @@ Node 20+ (probado con Node 24) y npm.
 
 ```powershell
 npm install
-npm run dev          # http://localhost:5173 (laboratorio: /dev/mascot)
+npm run dev          # http://localhost:5173 (login) · /dev/mascot solo existe en desarrollo
 npm run lint
 npm run typecheck
 npm run test
@@ -23,7 +23,9 @@ npm run validate     # todo lo anterior en cadena
 ## Estructura
 
 ```
-src/app/                 rutas y páginas de aplicación
+src/app/                 rutas
+src/features/auth/       login: componentes, validación, hook y gateway (pendiente de Firebase)
+src/features/intro/      secuencia cinematográfica: fondo, escenario del conejo, movimiento, orquestador
 src/features/mascot/     componente <Mascot />, contratos, clips, secuencias
 src/features/mascot/dev/ laboratorio de clips (ruta /dev/mascot)
 src/hooks/  src/lib/     utilidades transversales
@@ -49,6 +51,13 @@ Ningún archivo de código (TS, TSX, JS, CSS, scripts, tests) puede superar 150 
 Clips: `walk`, `stop`, `point`, `idle`, `ride`, `ride-idle`, `ride-mount`, `ride-celebrate`.
 Secuencia de login: `LOGIN_SEQUENCE` (walk → stop → point → idle) con `useClipSequence`.
 Estados: loading, ready, error y unsupported (sin WebGL), todos con fallback accesible.
+
+## Login cinematográfico
+
+Ruta `/`. Secuencia: apertura → walk (desplazamiento real) → stop → point (revela el formulario) → idle.
+Se reproduce una vez por sesión (`sessionStorage`), se omite con el botón o con `prefers-reduced-motion`, y si la mascota
+no carga (sin WebGL o error) el formulario aparece directamente. La autenticación usa `pendingAuthGateway`:
+informa que Firebase llega en ONGOING-M4-003 y no simula sesiones.
 
 ## Seguridad
 

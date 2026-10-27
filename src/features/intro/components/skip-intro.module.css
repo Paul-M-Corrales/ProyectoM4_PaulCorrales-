@@ -1,0 +1,29 @@
+.skip {
+  position: fixed;
+  top: max(1rem, env(safe-area-inset-top));
+  right: 1rem;
+  z-index: 10;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  color: var(--color-white);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  animation: skip-in 0.5s var(--ease-out) 0.6s backwards;
+}
+
+.skip:hover {
+  border-color: var(--color-pink);
+  box-shadow: var(--glow-fuchsia);
+}
+
+@keyframes skip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}

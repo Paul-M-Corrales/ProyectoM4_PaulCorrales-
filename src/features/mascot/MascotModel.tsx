@@ -35,18 +35,25 @@ export function MascotModel({ clip, playId, reducedMotion, onClipFinished, onRea
   }, [scene])
   const mixer = useMemo(() => new AnimationMixer(model), [model])
   const finishedRef = useRef(onClipFinished)
+  const mounted = useRef(false)
 
   useEffect(() => {
     finishedRef.current = onClipFinished
   }, [onClipFinished])
 
   useEffect(() => {
+    mounted.current = true
     onReady()
     return () => {
-      mixer.stopAllAction()
-      mixer.uncacheRoot(model)
-      disposeObject(scene)
-      useGLTF.clear(MASCOT_URL)
+      mounted.current = false
+      // Diferido: StrictMode remonta de inmediato y liberar antes obligaría a recargar el GLB.
+      queueMicrotask(() => {
+        if (mounted.current) return
+        mixer.stopAllAction()
+        mixer.uncacheRoot(model)
+        disposeObject(scene)
+        useGLTF.clear(MASCOT_URL)
+      })
     }
   }, [scene, model, mixer, onReady])
 

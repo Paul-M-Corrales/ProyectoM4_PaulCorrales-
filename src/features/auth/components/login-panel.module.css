@@ -1,0 +1,61 @@
+.wrap {
+  position: relative;
+  width: min(100%, 440px);
+  perspective: 1200px;
+}
+
+.panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(22px) saturate(140%);
+  box-shadow: var(--glow-fuchsia), var(--glow-violet), inset 0 1px 0 rgb(255 255 255 / 18%);
+  transform-origin: 30% 60%;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, var(--color-pink), transparent 40%, var(--color-violet));
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.title {
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: -0.4rem 0 0.4rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+.bloom {
+  position: absolute;
+  inset: -25%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(255 110 199 / 80%), rgb(255 31 142 / 35%) 40%, transparent 70%);
+  pointer-events: none;
+}
+
+.ring {
+  position: absolute;
+  inset: 5%;
+  border: 2px solid var(--color-pink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glow-fuchsia);
+  pointer-events: none;
+}

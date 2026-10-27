@@ -39,3 +39,14 @@
   --duration-fast: 160ms;
   --duration-base: 320ms;
 }
+
+:root {
+  /* Superficies de cristal (login) */
+  --glass-bg: rgb(14 8 32 / 62%);
+  --glass-border: rgb(255 110 199 / 38%);
+  --field-bg: rgb(255 255 255 / 7%);
+  --field-border: rgb(255 255 255 / 20%);
+  --color-danger: #ff8fa3;
+  --color-notice: #c4b5fd;
+  --glow-violet: 0 0 28px rgb(139 92 246 / 45%);
+}
