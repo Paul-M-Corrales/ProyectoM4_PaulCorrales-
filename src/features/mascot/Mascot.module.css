@@ -1,0 +1,36 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+}
+
+.root canvas {
+  display: block;
+}
+
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.badge {
+  font-size: 3rem;
+  filter: drop-shadow(var(--glow-fuchsia));
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

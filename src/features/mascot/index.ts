@@ -1,0 +1,5 @@
+export { Mascot } from './Mascot'
+export { CLIPS, LOGIN_SEQUENCE } from './clips'
+export { CLIP_NAMES } from './contracts'
+export type { ClipName, MascotProps, MascotStatus } from './contracts'
+export { useClipSequence } from './useClipSequence'
