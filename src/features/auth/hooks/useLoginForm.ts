@@ -1,20 +1,15 @@
 import { useCallback, useState } from 'react'
-import type { AuthAction, AuthGateway, AuthResult, FieldErrors, FormStatus } from '../types'
+import type { AuthGateway, FieldErrors } from '../types'
 import { validateForAction } from '../validation/loginValidation'
+import { useAuthRequest } from './useAuthRequest'
 
-const FALLBACK_ERROR = 'No pudimos completar la acción. Intentá de nuevo.'
-
-function toStatus(result: AuthResult): FormStatus {
-  if (result.ok) return { kind: 'idle' }
-  const kind = result.code === 'integration-pending' ? 'notice' : 'error'
-  return { kind, message: result.message }
-}
+type LoginAction = 'sign-in' | 'google'
 
 export function useLoginForm(gateway: AuthGateway) {
   const [values, setValues] = useState({ email: '', password: '' })
   const [errors, setErrors] = useState<FieldErrors>({})
-  const [status, setStatus] = useState<FormStatus>({ kind: 'idle' })
   const [invalidTick, setInvalidTick] = useState(0)
+  const { status, setStatus, perform } = useAuthRequest()
 
   const setField = useCallback((field: 'email' | 'password', value: string) => {
     setValues((current) => ({ ...current, [field]: value }))
@@ -22,7 +17,7 @@ export function useLoginForm(gateway: AuthGateway) {
   }, [])
 
   const run = useCallback(
-    async (action: AuthAction) => {
+    async (action: LoginAction) => {
       if (status.kind === 'loading') return
       const found = validateForAction(values, action)
       setErrors(found)
@@ -31,20 +26,14 @@ export function useLoginForm(gateway: AuthGateway) {
         setInvalidTick((tick) => tick + 1)
         return
       }
-      setStatus({ kind: 'loading', action })
-      try {
-        const calls: Record<AuthAction, () => Promise<AuthResult>> = {
-          'sign-in': () => gateway.signInWithEmail(values.email.trim(), values.password),
-          google: () => gateway.signInWithGoogle(),
-          'sign-up': () => gateway.signUpWithEmail(values.email.trim(), values.password),
-          reset: () => gateway.requestPasswordReset(values.email.trim()),
-        }
-        setStatus(toStatus(await calls[action]()))
-      } catch {
-        setStatus({ kind: 'error', message: FALLBACK_ERROR })
-      }
+      const email = values.email.trim()
+      await perform(action, () =>
+        action === 'google'
+          ? gateway.signInWithGoogle()
+          : gateway.signInWithEmail(email, values.password),
+      )
     },
-    [gateway, status.kind, values],
+    [gateway, perform, setStatus, status.kind, values],
   )
 
   return { values, errors, status, invalidTick, setField, run }

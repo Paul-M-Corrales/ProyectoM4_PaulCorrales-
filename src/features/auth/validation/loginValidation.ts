@@ -1,4 +1,4 @@
-import type { AuthAction, FieldErrors, LoginValues } from '../types'
+import type { AuthAction, FieldErrors, LoginValues, RegisterValues } from '../types'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 export const MIN_PASSWORD_LENGTH = 8
@@ -27,5 +27,15 @@ export function validateForAction(values: LoginValues, action: AuthAction): Fiel
   if (action === 'reset') return errors
   const password = validatePassword(values.password, action === 'sign-up')
   if (password) errors.password = password
+  return errors
+}
+
+/** Registro: correo válido, contraseña con largo mínimo y confirmación idéntica. */
+export function validateRegistration(values: RegisterValues): FieldErrors {
+  const errors = validateForAction(values, 'sign-up')
+  if (!values.confirmPassword) errors.confirmPassword = 'Repetí tu contraseña.'
+  else if (!errors.password && values.confirmPassword !== values.password) {
+    errors.confirmPassword = 'Las contraseñas no coinciden.'
+  }
   return errors
 }

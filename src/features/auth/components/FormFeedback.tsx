@@ -9,7 +9,7 @@ export function FormFeedback({ status }: { readonly status: FormStatus }) {
       </p>
     )
   }
-  if (status.kind === 'notice') {
+  if (status.kind === 'notice' || status.kind === 'success') {
     return (
       <p className={`${styles.feedback} ${styles.feedbackNotice}`} role="status">
         {status.message}

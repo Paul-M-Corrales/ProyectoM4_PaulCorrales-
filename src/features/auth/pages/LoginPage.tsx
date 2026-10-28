@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { LoginPanel } from '@/features/auth/components/LoginPanel'
-import { pendingAuthGateway } from '@/features/auth/services/pendingAuthGateway'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 import type { AuthGateway } from '@/features/auth/types'
 import { FuchsiaBackdrop } from '@/features/intro/components/FuchsiaBackdrop'
 import { MascotStage } from '@/features/intro/components/MascotStage'
@@ -10,7 +10,8 @@ import type { MascotStatus } from '@/features/mascot'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import styles from './login-page.module.css'
 
-export function LoginPage({ gateway = pendingAuthGateway }: { readonly gateway?: AuthGateway }) {
+export function LoginPage({ gateway }: { readonly gateway?: AuthGateway }) {
+  const auth = useAuth()
   const reducedMotion = usePrefersReducedMotion()
   const [status, setStatus] = useState<MascotStatus>('loading')
   const intro = useIntroSequence({ status, reducedMotion })
@@ -31,7 +32,7 @@ export function LoginPage({ gateway = pendingAuthGateway }: { readonly gateway?:
         />
       </div>
       <div className={styles.panel}>
-        <LoginPanel revealed={intro.revealed} gateway={gateway} />
+        <LoginPanel revealed={intro.revealed} gateway={gateway ?? auth.gateway} />
       </div>
     </main>
   )

@@ -1,7 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { LoginForm } from '@/features/auth/components/LoginForm'
-import { pendingAuthGateway } from '@/features/auth/services/pendingAuthGateway'
+import { MemoryRouter } from 'react-router'
+import { unconfiguredAuthGateway } from '@/features/auth/services/unconfiguredAuthGateway'
 import type { AuthGateway, AuthResult } from '@/features/auth/types'
 
 function gatewayWith(result: Promise<AuthResult>): AuthGateway {
@@ -10,13 +11,22 @@ function gatewayWith(result: Promise<AuthResult>): AuthGateway {
     signInWithGoogle: vi.fn(() => result),
     signUpWithEmail: vi.fn(() => result),
     requestPasswordReset: vi.fn(() => result),
+    signOut: vi.fn(() => result),
+    onAuthChange: vi.fn(() => () => {}),
   }
 }
+
+const renderForm = (gateway: AuthGateway) =>
+  render(
+    <MemoryRouter>
+      <LoginForm gateway={gateway} />
+    </MemoryRouter>,
+  )
 
 describe('<LoginForm />', () => {
   it('muestra errores accesibles y enfoca el primer campo inválido', async () => {
     const user = userEvent.setup()
-    render(<LoginForm gateway={pendingAuthGateway} />)
+    renderForm(unconfiguredAuthGateway)
     await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
     expect(await screen.findAllByRole('alert')).toHaveLength(2)
     const email = screen.getByLabelText('Correo electrónico')
@@ -26,7 +36,7 @@ describe('<LoginForm />', () => {
 
   it('alterna la visibilidad de la contraseña', async () => {
     const user = userEvent.setup()
-    render(<LoginForm gateway={pendingAuthGateway} />)
+    renderForm(unconfiguredAuthGateway)
     const password = screen.getByLabelText('Contraseña')
     expect(password).toHaveAttribute('type', 'password')
     await user.click(screen.getByRole('button', { name: /mostrar contraseña/i }))
@@ -37,7 +47,7 @@ describe('<LoginForm />', () => {
     const user = userEvent.setup()
     let resolve: (r: AuthResult) => void = () => {}
     const gateway = gatewayWith(new Promise<AuthResult>((r) => (resolve = r)))
-    render(<LoginForm gateway={gateway} />)
+    renderForm(gateway)
     await user.type(screen.getByLabelText('Correo electrónico'), 'ana@dominio.com')
     await user.type(screen.getByLabelText('Contraseña'), 'secreta123')
     await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
@@ -47,33 +57,42 @@ describe('<LoginForm />', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Credenciales inválidas.')
   })
 
-  it('informa que Firebase está pendiente y no simula un inicio de sesión', async () => {
+  it('informa que Firebase no está configurado y no simula un inicio de sesión', async () => {
     const user = userEvent.setup()
-    render(<LoginForm gateway={pendingAuthGateway} />)
+    renderForm(unconfiguredAuthGateway)
     await user.click(screen.getByRole('button', { name: /Continuar con Google/ }))
-    expect(await screen.findByRole('status')).toHaveTextContent(/ONGOING-M4-003/)
+    expect(await screen.findByRole('status')).toHaveTextContent(/no está configurada/)
     expect(screen.queryByText(/sesión iniciada/i)).not.toBeInTheDocument()
   })
 
-  it('recuperar y crear cuenta validan antes de llamar al gateway', async () => {
+  it('recuperar contraseña y crear cuenta son enlaces a sus rutas', () => {
+    renderForm(gatewayWith(Promise.resolve({ ok: true })))
+    expect(screen.getByRole('link', { name: 'Recuperar contraseña' })).toHaveAttribute('href', '/recuperar-password')
+    expect(screen.getByRole('link', { name: 'Crear cuenta' })).toHaveAttribute('href', '/registro')
+  })
+
+  it('un inicio de sesión exitoso muestra confirmación', async () => {
     const user = userEvent.setup()
-    const gateway = gatewayWith(Promise.resolve({ ok: true }))
-    render(<LoginForm gateway={gateway} />)
-    await user.click(screen.getByRole('button', { name: 'Recuperar contraseña' }))
-    expect(gateway.requestPasswordReset).not.toHaveBeenCalled()
+    renderForm(gatewayWith(Promise.resolve({ ok: true })))
     await user.type(screen.getByLabelText('Correo electrónico'), 'ana@dominio.com')
-    await user.click(screen.getByRole('button', { name: 'Recuperar contraseña' }))
-    await waitFor(() =>
-      expect(gateway.requestPasswordReset).toHaveBeenCalledWith('ana@dominio.com'),
-    )
-    await user.click(screen.getByRole('button', { name: 'Crear cuenta' }))
-    expect(gateway.signUpWithEmail).not.toHaveBeenCalled()
+    await user.type(screen.getByLabelText('Contraseña'), 'secreta123')
+    await user.click(screen.getByRole('button', { name: 'Iniciar sesión' }))
+    expect(await screen.findByRole('status')).toHaveTextContent(/Listo/)
+  })
+
+  it('el cierre del popup de Google es un aviso, no un error', async () => {
+    const user = userEvent.setup()
+    const cancelled: AuthResult = { ok: false, code: 'cancelled', message: 'Cancelaste el acceso con Google.' }
+    renderForm(gatewayWith(Promise.resolve(cancelled)))
+    await user.click(screen.getByRole('button', { name: /Continuar con Google/ }))
+    expect(await screen.findByRole('status')).toHaveTextContent(/Cancelaste/)
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('es utilizable solo con teclado (Tab y Enter)', async () => {
     const user = userEvent.setup()
     const gateway = gatewayWith(Promise.resolve({ ok: true }))
-    render(<LoginForm gateway={gateway} />)
+    renderForm(gateway)
     await user.tab()
     await user.keyboard('ana@dominio.com')
     await user.tab()

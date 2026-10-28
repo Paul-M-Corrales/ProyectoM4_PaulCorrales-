@@ -1,4 +1,5 @@
 import { useEffect, useRef, type FormEvent } from 'react'
+import { Link } from 'react-router'
 import { useLoginForm } from '../hooks/useLoginForm'
 import type { AuthGateway } from '../types'
 import { FormFeedback } from './FormFeedback'
@@ -56,12 +57,12 @@ export function LoginForm({ gateway }: { readonly gateway: AuthGateway }) {
         Continuar con Google
       </button>
       <div className={styles.links}>
-        <button type="button" className={styles.link} disabled={loading} onClick={() => void run('reset')}>
+        <Link to="/recuperar-password" className={styles.link}>
           Recuperar contraseña
-        </button>
-        <button type="button" className={styles.link} disabled={loading} onClick={() => void run('sign-up')}>
+        </Link>
+        <Link to="/registro" className={styles.link}>
           Crear cuenta
-        </button>
+        </Link>
       </div>
     </form>
   )
