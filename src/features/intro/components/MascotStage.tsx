@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { Mascot } from '@/features/mascot'
 import type { ClipName, MascotStatus } from '@/features/mascot'
 import { useElementHeight } from '../hooks/useElementHeight'
@@ -20,7 +20,9 @@ interface Props {
 export function MascotStage({ phase, settled, clip, playId, reducedMotion, ...handlers }: Props) {
   const slotRef = useRef<HTMLDivElement>(null)
   const height = useElementHeight(slotRef)
-  const x = useWalkMotion(phase, height, settled)
+  const { x, yaw } = useWalkMotion(phase, height, settled)
+
+  const getYaw = useCallback(() => yaw.get(), [yaw])
 
   return (
     <div className={styles.stage}>
@@ -30,6 +32,7 @@ export function MascotStage({ phase, settled, clip, playId, reducedMotion, ...ha
           playId={playId}
           label="Conejo 3D, la mascota de On-going, que presenta el formulario de inicio de sesión"
           reducedMotion={reducedMotion}
+          getYaw={getYaw}
           onClipFinished={handlers.onClipFinished}
           onStatusChange={handlers.onStatusChange}
         />

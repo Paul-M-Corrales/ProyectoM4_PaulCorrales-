@@ -31,6 +31,8 @@ export interface MascotProps {
   readonly label: string
   /** Congela la animación (prefers-reduced-motion). */
   readonly reducedMotion?: boolean
+  /** Giro (rad) sobre el eje vertical, leído en cada fotograma; 0 = de frente a la cámara. */
+  readonly getYaw?: (() => number) | undefined
   /** Se dispara cuando un clip finito termina. */
   readonly onClipFinished?: ((clip: ClipName) => void) | undefined
   readonly onStatusChange?: ((status: MascotStatus) => void) | undefined

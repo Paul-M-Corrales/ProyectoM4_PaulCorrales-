@@ -18,3 +18,9 @@ export const STOP_SEC = CLIPS.stop.durationSec
 export const START_OFFSET = STRIDE_PER_CYCLE * CLIPS.walk.repetitions + STOP_TRAVEL
 /** Posición fuera de pantalla mientras aún no se conoce la altura del escenario. */
 export const OFFSCREEN_PX = -4000
+
+/**
+ * Giro del conejo al caminar de perfil hacia la derecha de la pantalla.
+ * El GLB (Mixamo) mira a +Z, hacia la cámara; +90° sobre Y lo gira hacia +X.
+ */
+export const WALK_YAW = Math.PI / 2

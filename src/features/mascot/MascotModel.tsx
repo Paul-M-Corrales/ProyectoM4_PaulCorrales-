@@ -1,7 +1,7 @@
 import { useGLTF } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
-import { AnimationClip, AnimationMixer, LoopOnce, LoopRepeat, type AnimationAction } from 'three'
+import { AnimationClip, AnimationMixer, LoopOnce, LoopRepeat, type AnimationAction, type Group } from 'three'
 import { clone } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { disposeObject } from '@/lib/disposeObject'
 import { BIKE_NODE_NAME, CLIPS, CROSSFADE_SEC, MASCOT_URL } from './clips'
@@ -12,6 +12,7 @@ interface Props {
   readonly clip: ClipName
   readonly playId: number
   readonly reducedMotion: boolean
+  readonly getYaw: (() => number) | undefined
   readonly onClipFinished: ((clip: ClipName) => void) | undefined
   readonly onReady: () => void
 }
@@ -26,7 +27,7 @@ function configure(action: AnimationAction, clip: ClipName, paused: boolean) {
   action.paused = paused
 }
 
-export function MascotModel({ clip, playId, reducedMotion, onClipFinished, onReady }: Props) {
+export function MascotModel({ clip, playId, reducedMotion, getYaw, onClipFinished, onReady }: Props) {
   const { scene, animations } = useGLTF(MASCOT_URL)
   const model = useMemo(() => {
     const copy = clone(scene)
@@ -34,6 +35,7 @@ export function MascotModel({ clip, playId, reducedMotion, onClipFinished, onRea
     return copy
   }, [scene])
   const mixer = useMemo(() => new AnimationMixer(model), [model])
+  const yawRef = useRef<Group>(null)
   const finishedRef = useRef(onClipFinished)
   const mounted = useRef(false)
 
@@ -77,7 +79,15 @@ export function MascotModel({ clip, playId, reducedMotion, onClipFinished, onRea
     }
   }, [animations, mixer, clip, playId, reducedMotion])
 
-  useFrame((_, delta) => mixer.update(delta))
+  useFrame((_, delta) => {
+    mixer.update(delta)
+    // Grupo padre: orienta al conejo sin tocar el GLB ni los ejes de sus clips.
+    if (yawRef.current) yawRef.current.rotation.y = getYaw?.() ?? 0
+  })
 
-  return <primitive object={model} />
+  return (
+    <group ref={yawRef}>
+      <primitive object={model} />
+    </group>
+  )
 }
