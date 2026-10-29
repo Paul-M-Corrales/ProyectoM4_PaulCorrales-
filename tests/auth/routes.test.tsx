@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { fakeGateway, renderApp, USER } from './helpers'
 
 const loginHeading = () => screen.findByRole('heading', { name: 'Entrá a tu rutina' })
-const dashboardHeading = () => screen.findByRole('heading', { level: 1, name: /Organizá tus tareas/ })
+const dashboardHeading = () => screen.findByRole('heading', { level: 1, name: /Organizá mejor/ })
 
 describe('rutas y sesión', () => {
   beforeEach(() => window.sessionStorage.clear())
@@ -26,7 +26,7 @@ describe('rutas y sesión', () => {
     renderApp(gateway, '/inicio')
     act(() => gateway.emit(USER))
     expect(await dashboardHeading()).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Ir a Mis tareas' })).toHaveAttribute('href', '/tareas')
+    expect(screen.getByRole('link', { name: 'Ir a mis tareas' })).toHaveAttribute('href', '/tareas')
   })
 
   it('con sesión, login y registro redirigen a Inicio', async () => {
@@ -59,6 +59,7 @@ describe('rutas y sesión', () => {
     const gateway = fakeGateway()
     renderApp(gateway, '/inicio')
     act(() => gateway.emit(USER))
+    await user.click(await screen.findByRole('button', { name: /Cuenta de/ }))
     await user.click(await screen.findByRole('button', { name: 'Cerrar sesión' }))
     expect(gateway.signOut).toHaveBeenCalledTimes(1)
     act(() => gateway.emit(null))
@@ -71,6 +72,7 @@ describe('rutas y sesión', () => {
     vi.mocked(gateway.signOut).mockResolvedValue({ ok: false, code: 'network', message: 'Sin conexión.' })
     renderApp(gateway, '/inicio')
     act(() => gateway.emit(USER))
+    await user.click(await screen.findByRole('button', { name: /Cuenta de/ }))
     await user.click(await screen.findByRole('button', { name: 'Cerrar sesión' }))
     expect(await screen.findByText('Sin conexión.')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Cerrar sesión' })).toBeEnabled()

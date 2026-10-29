@@ -1,29 +1,32 @@
-import { Link } from 'react-router'
-import { HeroMascot } from './HeroMascot'
-import { ProductivityVisuals } from './ProductivityVisuals'
+import { ButtonAnchor, ButtonLink } from '@/components/ui/Button'
+import { Eyebrow } from '@/components/ui/Eyebrow'
+import { Benefits } from './Benefits'
+import { HeroStage } from './HeroStage'
 import styles from './hero.module.css'
 
 export function Hero() {
   return (
     <section className={styles.hero} aria-labelledby="hero-title">
       <div className={styles.copy}>
-        <p className={styles.eyebrow}>Tu espacio de productividad</p>
+        <Eyebrow>Tu día, en movimiento</Eyebrow>
         <h1 id="hero-title" className={styles.title}>
-          Organizá tus tareas y <span className={styles.accent}>sigue avanzando</span>
+          Organizá mejor.
+          <br />
+          Avanzá todos los días.
         </h1>
         <p className={styles.lead}>
-          On-going reúne tus pendientes, prioridades y fechas en un solo lugar para que cada día
-          sepas qué hacer primero y veas cómo avanzás, tarea por tarea.
+          On-going te ayuda a organizar tus tareas, mantener el enfoque y ver tu progreso, para que
+          cada día cuente.
         </p>
         <div className={styles.actions}>
-          <Link to="/tareas" className={styles.primary}>Ir a Mis tareas</Link>
-          <a href="#funcionalidades" className={styles.secondary}>Conocer funcionalidades</a>
+          <ButtonLink to="/tareas" iconAfter="arrow">Ir a mis tareas</ButtonLink>
+          <ButtonAnchor href="#como-funciona" variant="outline" icon="play">
+            Ver cómo funciona
+          </ButtonAnchor>
         </div>
+        <Benefits />
       </div>
-      <div className={styles.visual}>
-        <ProductivityVisuals />
-        <HeroMascot className={styles.mascot} />
-      </div>
+      <HeroStage />
     </section>
   )
 }

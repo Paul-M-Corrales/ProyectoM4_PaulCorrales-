@@ -2,8 +2,8 @@ import { CLIPS, LOGIN_SEQUENCE } from '@/features/mascot/clips'
 import { CLIP_NAMES } from '@/features/mascot/contracts'
 
 describe('configuración de clips', () => {
-  it('define los 8 clips del GLB', () => {
-    expect(CLIP_NAMES).toHaveLength(8)
+  it('define los 8 clips del GLB y el clip procedural welcome', () => {
+    expect(CLIP_NAMES).toHaveLength(9)
     expect(Object.keys(CLIPS).sort()).toEqual([...CLIP_NAMES].sort())
   })
 

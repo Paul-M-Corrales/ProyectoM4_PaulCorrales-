@@ -1,0 +1,51 @@
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-4) var(--ds-space-6);
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  list-style: none;
+}
+
+.item strong,
+.item small {
+  display: block;
+}
+
+.item strong {
+  font-size: var(--ds-text-sm);
+}
+
+.item small {
+  font-size: var(--ds-text-xs);
+  color: var(--ds-muted);
+}
+
+.icon {
+  display: grid;
+  place-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+}
+
+.green {
+  background: var(--ds-green-soft);
+  color: var(--ds-green);
+}
+
+.pink {
+  background: var(--ds-pink-soft);
+  color: var(--ds-pink);
+}
+
+.violet {
+  background: var(--ds-lavender-soft);
+  color: var(--ds-violet);
+}

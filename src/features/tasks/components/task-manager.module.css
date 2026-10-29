@@ -1,19 +1,22 @@
 .manager {
   display: grid;
   align-content: start;
-  gap: var(--space-4);
+  gap: var(--ds-space-5);
   min-width: 0;
 }
 
-.title {
-  font-size: clamp(2rem, 4vw, 2.8rem);
-  letter-spacing: -0.03em;
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-3);
 }
 
 .error {
   margin: 0;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  background: rgb(255 143 163 / 12%);
-  color: var(--color-danger);
+  padding: var(--ds-space-3) var(--ds-space-4);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-danger-soft);
+  color: var(--ds-danger);
 }

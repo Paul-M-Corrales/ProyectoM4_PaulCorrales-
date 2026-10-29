@@ -1,0 +1,31 @@
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+}
+
+.select {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-2);
+  min-height: 2.6rem;
+  padding: 0 var(--ds-space-3);
+  border: 1.5px solid #d6d7de;
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface);
+  font-size: var(--ds-text-sm);
+  color: var(--ds-ink-soft);
+}
+
+.select select {
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--ds-ink);
+  font-weight: var(--ds-weight-bold);
+  cursor: pointer;
+}
+
+.select:focus-within {
+  border-color: var(--ds-ink);
+}

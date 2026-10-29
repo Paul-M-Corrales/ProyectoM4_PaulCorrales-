@@ -1,13 +1,11 @@
 import { Outlet } from 'react-router'
-import { AppBackdrop } from './AppBackdrop'
 import { Navbar } from './Navbar'
 import styles from './app-layout.module.css'
 
-/** Estructura común de las pantallas privadas: fondo, barra superior y contenido. */
+/** Estructura común de las pantallas privadas: barra superior y contenido sobre fondo claro. */
 export function AppLayout() {
   return (
-    <div className={styles.shell}>
-      <AppBackdrop />
+    <div className={`ds-app ${styles.shell}`}>
       <Navbar />
       <main className={styles.content}>
         <Outlet />

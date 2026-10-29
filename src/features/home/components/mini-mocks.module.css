@@ -1,0 +1,130 @@
+.panel {
+  display: grid;
+  gap: var(--ds-space-3);
+  padding: var(--ds-space-4);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-surface);
+  box-shadow: var(--ds-shadow-sm);
+  font-size: var(--ds-text-sm);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-3);
+}
+
+.plus {
+  display: grid;
+  place-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-ink);
+  color: #fff;
+}
+
+.list {
+  display: grid;
+  gap: var(--ds-space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  padding-bottom: var(--ds-space-2);
+  border-bottom: var(--ds-border);
+  list-style: none;
+}
+
+.box {
+  display: inline-grid;
+  place-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 1.5px solid #c9cad3;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.done .box {
+  border-color: var(--ds-green);
+  background: var(--ds-green);
+}
+
+.select {
+  padding: 0.2rem 0.6rem;
+  border: var(--ds-border);
+  border-radius: var(--ds-radius-sm);
+  color: var(--ds-muted);
+}
+
+.chart {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ds-space-2);
+  height: 7rem;
+}
+
+.col {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.3rem;
+  height: 100%;
+}
+
+.col > span {
+  width: 100%;
+  border-radius: 99px;
+  background: var(--ds-violet);
+}
+
+.col small {
+  font-size: 0.65rem;
+  color: var(--ds-muted);
+}
+
+.toggle {
+  display: inline-flex;
+  justify-content: flex-end;
+  width: 2.4rem;
+  padding: 0.15rem;
+  border-radius: 99px;
+  background: var(--ds-green);
+}
+
+.toggle span {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.timer {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 9rem;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 0.7rem solid #ffe0cc;
+  border-top-color: var(--ds-orange);
+  border-right-color: var(--ds-orange);
+  border-radius: 50%;
+}
+
+.timer strong {
+  font-size: var(--ds-text-lg);
+}
+
+.timer small {
+  font-size: 0.65rem;
+  color: var(--ds-muted);
+}

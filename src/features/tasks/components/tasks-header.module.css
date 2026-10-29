@@ -1,0 +1,23 @@
+.header {
+  display: grid;
+  justify-items: start;
+  gap: var(--ds-space-3);
+}
+
+.title {
+  font-size: var(--ds-display-lg);
+  line-height: var(--ds-leading-tight);
+  letter-spacing: var(--ds-tracking-display);
+}
+
+.lead {
+  margin: 0;
+  font-size: var(--ds-text-lg);
+  color: var(--ds-muted);
+}
+
+@media (min-width: 1024px) {
+  .title {
+    font-size: clamp(3.4rem, 5.6vw, 5.4rem);
+  }
+}

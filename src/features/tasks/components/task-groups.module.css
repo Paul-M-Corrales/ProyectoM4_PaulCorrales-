@@ -1,0 +1,57 @@
+.groups {
+  display: grid;
+  gap: var(--ds-space-5);
+}
+
+.group {
+  display: grid;
+  gap: var(--ds-space-3);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--ds-space-3);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.title {
+  font-size: var(--ds-text-xl);
+  letter-spacing: var(--ds-tracking-title);
+}
+
+.count {
+  flex: 1;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-muted);
+}
+
+.head svg {
+  align-self: center;
+  transition: transform var(--ds-duration-base) var(--ds-ease);
+}
+
+.closed {
+  transform: rotate(-90deg);
+}
+
+.open {
+  transform: rotate(180deg);
+}
+
+.list {
+  display: grid;
+  gap: var(--ds-space-2);
+  margin: 0;
+  padding: 0;
+}
+
+.list[hidden] {
+  display: none;
+}

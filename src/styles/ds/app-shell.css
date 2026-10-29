@@ -1,0 +1,39 @@
+/* Contenedor de las pantallas privadas: sobrescribe el tema oscuro del login solo aquí. */
+.ds-app {
+  min-height: 100dvh;
+  background: var(--ds-surface);
+  color: var(--ds-ink);
+  color-scheme: light;
+  font-family: var(--ds-font);
+  font-weight: var(--ds-weight-regular);
+  line-height: var(--ds-leading-body);
+}
+
+.ds-app {
+  --color-text-muted: var(--ds-muted);
+}
+
+:where(.ds-app) h1,
+:where(.ds-app) h2,
+:where(.ds-app) h3 {
+  font-family: var(--ds-font);
+  font-weight: var(--ds-weight-black);
+  letter-spacing: var(--ds-tracking-title);
+}
+
+:where(.ds-app) a {
+  color: inherit;
+}
+
+:where(.ds-app) :focus-visible {
+  outline: none;
+  box-shadow: var(--ds-focus-ring);
+  border-radius: var(--ds-radius-sm);
+}
+
+:where(.ds-app) button,
+:where(.ds-app) input,
+:where(.ds-app) select,
+:where(.ds-app) textarea {
+  font-family: inherit;
+}

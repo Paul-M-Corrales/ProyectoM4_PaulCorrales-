@@ -7,6 +7,7 @@ export const CLIP_NAMES = [
   'ride-idle',
   'ride-mount',
   'ride-celebrate',
+  'welcome',
 ] as const
 
 export type ClipName = (typeof CLIP_NAMES)[number]

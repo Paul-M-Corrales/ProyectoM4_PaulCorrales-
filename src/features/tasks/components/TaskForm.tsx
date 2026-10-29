@@ -1,20 +1,23 @@
 import { useState, type FormEvent } from 'react'
+import { Button } from '@/components/ui/Button'
 import { validateDraft, DESCRIPTION_MAX, TITLE_MAX, type DraftErrors } from '../logic/validateDraft'
-import { PRIORITIES, type Priority, type TaskActionResult, type TaskDraft } from '../types'
+import { PRIORITIES, type Priority, type Task, type TaskActionResult, type TaskDraft } from '../types'
 import styles from './task-form.module.css'
 
 interface Props {
+  /** Tarea que se está editando; sin ella el formulario crea una nueva. */
+  readonly initial?: Task | undefined
   readonly onSubmit: (draft: TaskDraft) => Promise<TaskActionResult>
   readonly onCancel: () => void
 }
 
 const PRIORITY_LABELS: Record<Priority, string> = { alta: 'Alta', media: 'Media', baja: 'Baja' }
 
-export function TaskForm({ onSubmit, onCancel }: Props) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState<Priority>('media')
-  const [dueDate, setDueDate] = useState('')
+export function TaskForm({ initial, onSubmit, onCancel }: Props) {
+  const [title, setTitle] = useState(initial?.title ?? '')
+  const [description, setDescription] = useState(initial?.description ?? '')
+  const [priority, setPriority] = useState<Priority>(initial?.priority ?? 'media')
+  const [dueDate, setDueDate] = useState(initial?.dueDate ?? '')
   const [errors, setErrors] = useState<DraftErrors>({})
   const [failure, setFailure] = useState<string | undefined>()
   const [pending, setPending] = useState(false)
@@ -36,6 +39,7 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
 
   return (
     <form className={styles.form} onSubmit={(event) => void submit(event)} noValidate>
+      <h2 className={styles.heading}>{initial ? 'Editar tarea' : 'Nueva tarea'}</h2>
       <label className={styles.field}>
         Título
         <input
@@ -71,10 +75,8 @@ export function TaskForm({ onSubmit, onCancel }: Props) {
       </div>
       {failure && <p className={styles.notice} role="alert">{failure}</p>}
       <div className={styles.actions}>
-        <button type="button" className={styles.cancel} onClick={onCancel}>Cancelar</button>
-        <button type="submit" className={styles.save} disabled={pending}>
-          {pending ? 'Guardando…' : 'Guardar tarea'}
-        </button>
+        <Button variant="outline" onClick={onCancel}>Cancelar</Button>
+        <Button type="submit" disabled={pending}>{pending ? 'Guardando…' : 'Guardar tarea'}</Button>
       </div>
     </form>
   )

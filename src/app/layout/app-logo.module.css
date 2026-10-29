@@ -1,0 +1,17 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.mark {
+  width: 2.6rem;
+  height: 2.6rem;
+}
+
+.word {
+  font-size: 1.65rem;
+  font-weight: var(--ds-weight-black);
+  letter-spacing: var(--ds-tracking-title);
+  color: var(--ds-ink);
+}

@@ -1,3 +1,5 @@
+import { Button } from '@/components/ui/Button'
+import { Icon } from '@/components/ui/Icon'
 import styles from './tasks-empty.module.css'
 
 interface Props {
@@ -11,24 +13,22 @@ export function TasksEmpty({ variant, connected, onCreate }: Props) {
   if (variant === 'no-results') {
     return (
       <div className={styles.empty}>
-        <h3>Sin resultados</h3>
+        <h2>Sin resultados</h2>
         <p>Ninguna tarea coincide con tu búsqueda o filtro.</p>
       </div>
     )
   }
   return (
     <div className={styles.empty}>
-      <span className={styles.icon} aria-hidden="true">✓</span>
-      <h3>Todavía no tenés tareas</h3>
+      <span className={styles.icon} aria-hidden="true"><Icon name="check" size={28} /></span>
+      <h2>Todavía no tenés tareas</h2>
       <p>Creá la primera para empezar a pedalear hacia tus objetivos.</p>
       {!connected && (
         <p className={styles.note} role="note">
           El guardado de tareas se conecta en el próximo paso del proyecto.
         </p>
       )}
-      <button type="button" className={styles.cta} onClick={onCreate}>
-        Crear mi primera tarea
-      </button>
+      <Button icon="plus" onClick={onCreate}>Crear mi primera tarea</Button>
     </div>
   )
 }

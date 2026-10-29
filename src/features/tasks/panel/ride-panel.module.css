@@ -1,0 +1,60 @@
+.panel {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    'keep ring'
+    'mascot mascot'
+    'weekly streak'
+    'quote quote';
+  align-content: start;
+  gap: var(--ds-space-3);
+  padding: var(--ds-space-5) var(--ds-gutter) var(--ds-space-6);
+  background: var(--ds-canvas);
+}
+
+.keep { grid-area: keep; }
+.ring { grid-area: ring; }
+.mascot { grid-area: mascot; position: relative; }
+.weekly { grid-area: weekly; }
+.streak { grid-area: streak; }
+.quote { grid-area: quote; }
+
+.canvas {
+  height: clamp(340px, 96vw, 460px);
+}
+
+/* Escritorio: panel pegajoso a la derecha; el conejo se solapa con las tarjetas laterales. */
+@media (min-width: 1024px) {
+  .panel {
+    position: sticky;
+    top: var(--ds-nav-height);
+    align-self: start;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    grid-template-areas:
+      'keep ring'
+      'mascot weekly'
+      'mascot streak'
+      'mascot quote';
+    grid-template-rows: auto auto auto 1fr;
+    min-height: calc(100dvh - var(--ds-nav-height));
+    padding: var(--ds-space-5) var(--ds-space-4);
+  }
+
+  .mascot {
+    margin-right: -3.5rem;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .weekly,
+  .streak,
+  .quote {
+    z-index: 2;
+  }
+
+  .canvas {
+    position: absolute;
+    inset: -8% -12% -2% -34%;
+    height: auto;
+  }
+}

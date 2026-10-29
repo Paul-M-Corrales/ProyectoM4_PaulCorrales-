@@ -1,0 +1,33 @@
+/* Sistema de diseño On-going (interior de la app). Prefijo --ds- para no chocar con el login. */
+:root {
+  /* Neutros */
+  --ds-ink: #0c0c10;
+  --ds-ink-soft: #3a3b45;
+  --ds-muted: #656774;
+  --ds-line: #ebebf0;
+  --ds-surface: #ffffff;
+  --ds-canvas: #f6f6f9;
+
+  /* Acentos vivos */
+  --ds-yellow: #ffd23f;
+  --ds-green: #1fc16b;
+  --ds-pink: #ff5fa8;
+  --ds-lavender: #c9b8ff;
+  --ds-violet: #7655ff;
+  --ds-orange: #ff7a3d;
+  --ds-blue: #2f7bff;
+  --ds-coral: #ff7f66;
+
+  /* Fondos suaves de tarjetas */
+  --ds-yellow-soft: #fff4c7;
+  --ds-green-soft: #e6f7d6;
+  --ds-pink-soft: #ffdcec;
+  --ds-lavender-soft: #ece6ff;
+  --ds-orange-soft: #ffe9d8;
+  --ds-blue-soft: #dfeaff;
+
+  /* Estados */
+  --ds-focus: #2f7bff;
+  --ds-danger: #d92d4b;
+  --ds-danger-soft: #ffe3e8;
+}

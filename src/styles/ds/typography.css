@@ -1,0 +1,20 @@
+:root {
+  --ds-font: 'Plus Jakarta Sans Variable', 'Segoe UI', system-ui, sans-serif;
+
+  --ds-text-xs: 0.78rem;
+  --ds-text-sm: 0.88rem;
+  --ds-text-md: 1rem;
+  --ds-text-lg: 1.2rem;
+  --ds-text-xl: clamp(1.4rem, 2.4vw, 1.8rem);
+  --ds-display-md: clamp(2.4rem, 7vw, 3.6rem);
+  --ds-display-lg: clamp(2.6rem, 9.5vw, 5rem);
+
+  --ds-weight-regular: 500;
+  --ds-weight-bold: 700;
+  --ds-weight-black: 800;
+
+  --ds-tracking-display: -0.05em;
+  --ds-tracking-title: -0.03em;
+  --ds-leading-tight: 0.98;
+  --ds-leading-body: 1.55;
+}

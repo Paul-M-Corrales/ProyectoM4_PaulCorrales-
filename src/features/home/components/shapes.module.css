@@ -1,0 +1,100 @@
+.shapes {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.block {
+  position: absolute;
+  border-radius: var(--ds-radius-lg);
+}
+
+.yellow {
+  left: 12%;
+  top: 8%;
+  width: 40%;
+  height: 78%;
+  background: var(--ds-yellow);
+  border-radius: 30px 70px 20px 40px;
+}
+
+.green {
+  right: 0;
+  top: 40%;
+  width: 46%;
+  height: 28%;
+  background: #52d68a;
+  border-radius: 20px 60px 20px 20px;
+  transform: rotate(-4deg);
+}
+
+.blue {
+  left: 36%;
+  bottom: 8%;
+  width: 34%;
+  height: 24%;
+  background: var(--ds-blue);
+  border-radius: 0;
+}
+
+.coral {
+  right: 0;
+  bottom: 6%;
+  width: 22%;
+  height: 28%;
+  background: var(--ds-coral);
+  transform: rotate(12deg);
+  border-radius: 8px;
+}
+
+.orange {
+  right: 12%;
+  top: 22%;
+  width: 14%;
+  height: 16%;
+  background: var(--ds-orange);
+  transform: rotate(6deg);
+  border-radius: 10px;
+}
+
+.squiggle {
+  position: absolute;
+  left: 2%;
+  top: 46%;
+  width: 40%;
+}
+
+.asterisk {
+  position: absolute;
+  right: 2%;
+  top: 44%;
+  width: 11%;
+}
+
+.scribble {
+  position: absolute;
+  left: 40%;
+  bottom: 10%;
+  width: 9%;
+}
+
+.dash {
+  position: absolute;
+  width: 3.2rem;
+  height: 0.55rem;
+  border-radius: var(--ds-radius-pill);
+}
+
+.dashGreen {
+  left: 0;
+  top: 22%;
+  background: var(--ds-green);
+  transform: rotate(48deg);
+}
+
+.dashYellow {
+  right: 24%;
+  top: 14%;
+  background: var(--ds-yellow);
+  transform: rotate(-52deg);
+}

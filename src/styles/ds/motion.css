@@ -1,0 +1,10 @@
+:root {
+  --ds-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ds-duration-fast: 140ms;
+  --ds-duration-base: 260ms;
+  --ds-duration-slow: 600ms;
+
+  /* Estados interactivos */
+  --ds-lift: translateY(-2px);
+  --ds-focus-ring: 0 0 0 3px #fff, 0 0 0 5px var(--ds-focus);
+}

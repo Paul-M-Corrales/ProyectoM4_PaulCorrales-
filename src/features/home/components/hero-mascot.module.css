@@ -1,0 +1,16 @@
+.entrance {
+  animation: enter var(--ds-duration-slow) var(--ds-ease) both;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entrance {
+    animation: none;
+  }
+}

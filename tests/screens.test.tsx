@@ -27,7 +27,7 @@ describe('navegación privada', () => {
     expect(screen.getByText(/todavía no están conectadas/)).toBeInTheDocument()
   })
 
-  it('Configuración y Reportes son privadas', async () => {
+  it('Reportes y Configuración son privadas', async () => {
     const gateway = fakeGateway()
     renderApp(gateway, '/configuracion')
     act(() => gateway.emit(null))
@@ -36,18 +36,45 @@ describe('navegación privada', () => {
 
   it('/dashboard antiguo redirige a Inicio', async () => {
     await openPrivate('/dashboard')
-    expect(await screen.findByRole('heading', { level: 1, name: /Organizá tus tareas/ })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: /Organizá mejor/ })).toBeInTheDocument()
+  })
+
+  it('el menú de cuenta ofrece cerrar sesión y no hay botón de registro', async () => {
+    const user = userEvent.setup()
+    await openPrivate('/inicio')
+    expect(await screen.findByRole('heading', { level: 1 })).toBeInTheDocument()
+    expect(screen.queryByText(/registr|gratis/i)).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /Cuenta de/ }))
+    expect(screen.getByText('ana@dominio.com')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Cerrar sesión' })).toBeInTheDocument()
+  })
+
+  it('"Nueva tarea" de la barra abre el formulario en Mis tareas', async () => {
+    const user = userEvent.setup()
+    await openPrivate('/inicio')
+    await user.click(await screen.findByRole('link', { name: 'Nueva tarea' }))
+    expect(await screen.findByRole('textbox', { name: /^Título/ })).toBeVisible()
   })
 })
 
 describe('Inicio', () => {
-  it('ofrece destinos reales y las tres tarjetas', async () => {
+  it('muestra los textos aprobados y destinos reales', async () => {
     await openPrivate('/inicio')
-    expect(await screen.findByRole('link', { name: 'Ir a Mis tareas' })).toHaveAttribute('href', '/tareas')
-    expect(screen.getByRole('link', { name: 'Conocer funcionalidades' })).toHaveAttribute('href', '#funcionalidades')
-    expect(screen.queryByText(/gratis/i)).not.toBeInTheDocument()
-    for (const title of ['Organizá tus tareas', 'Sigue tu progreso', 'Enfocate de verdad']) {
-      expect(screen.getByRole('heading', { level: 3, name: title })).toBeInTheDocument()
+    const title = await screen.findByRole('heading', { level: 1 })
+    expect(title).toHaveTextContent('Organizá mejor.')
+    expect(title).toHaveTextContent('Avanzá todos los días.')
+    expect(screen.getByText('Tu día, en movimiento')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Ir a mis tareas' })).toHaveAttribute('href', '/tareas')
+    expect(screen.getByRole('link', { name: 'Ver cómo funciona' })).toHaveAttribute('href', '#como-funciona')
+  })
+
+  it('"Ver cómo funciona" apunta a una sección que existe, con las tres tarjetas', async () => {
+    await openPrivate('/inicio')
+    await screen.findByRole('heading', { level: 1 })
+    const section = document.getElementById('como-funciona')
+    expect(section).not.toBeNull()
+    for (const text of [/Organizá\s*tus tareas/, /Visualizá\s*tu progreso/, /Mantené\s*el enfoque/]) {
+      expect(within(section as HTMLElement).getByRole('heading', { level: 3, name: text })).toBeInTheDocument()
     }
   })
 })
@@ -57,19 +84,22 @@ describe('Mis tareas', () => {
     await openPrivate('/tareas')
     expect(await screen.findByRole('heading', { name: 'Mis tareas' })).toBeInTheDocument()
     expect(screen.getByText('Todavía no tenés tareas')).toBeInTheDocument()
-    expect(screen.queryByRole('list', { name: 'Lista de tareas' })).not.toBeInTheDocument()
-    expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
-    expect(screen.getByText(/de.*tareas completadas/)).toHaveTextContent('0 de 0')
+    const ring = screen.getByRole('progressbar', { name: 'Tareas completadas' })
+    expect(ring).toHaveAttribute('aria-valuenow', '0')
+    expect(ring).toHaveTextContent('0/0')
+    const summary = screen.getByRole('list', { name: 'Resumen de tareas' })
+    expect(within(summary).getAllByText('0')).toHaveLength(3)
+    expect(screen.getByText('Aún no hay datos')).toBeInTheDocument()
   })
 
-  it('tiene buscador, filtros y Nueva tarea', async () => {
+  it('tiene buscador, filtros con contador, orden y vista', async () => {
     const user = userEvent.setup()
     await openPrivate('/tareas')
     expect(await screen.findByRole('searchbox')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Pendientes' }))
-    expect(screen.getByRole('button', { name: 'Pendientes' })).toHaveAttribute('aria-pressed', 'true')
-    await user.click(screen.getByRole('button', { name: /Nueva tarea/ }))
-    expect(screen.getByRole('textbox', { name: /^Título/ })).toBeVisible()
+    await user.click(screen.getByRole('button', { name: /Pendientes/ }))
+    expect(screen.getByRole('button', { name: /Pendientes/ })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByRole('combobox', { name: /Ordenar por/ })).toHaveValue('due')
+    expect(screen.getByRole('option', { name: /Tablero/ })).toBeDisabled()
   })
 
   it('el formulario valida y, sin Firestore, avisa que no se guardó', async () => {
@@ -81,6 +111,5 @@ describe('Mis tareas', () => {
     await user.type(screen.getByRole('textbox', { name: /^Título/ }), 'Estudiar')
     await user.click(screen.getByRole('button', { name: 'Guardar tarea' }))
     expect(await screen.findByText(/todavía no está conectado/)).toBeInTheDocument()
-    expect(screen.queryByRole('list', { name: 'Lista de tareas' })).not.toBeInTheDocument()
   })
 })

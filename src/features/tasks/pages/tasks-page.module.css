@@ -1,25 +1,21 @@
 .page {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-5);
-  width: min(100%, 1400px);
-  margin-inline: auto;
-  padding: var(--space-4) var(--space-3) var(--space-5);
+  min-height: calc(100dvh - var(--ds-nav-height));
 }
 
-/* Escritorio: 70 % gestión, 30 % conejo. */
-@media (min-width: 900px) {
+.main {
+  min-width: 0;
+  padding: var(--ds-space-5) var(--ds-gutter) var(--ds-space-7);
+}
+
+/* Solo escritorio: 70 % gestión / 30 % conejo y métricas. */
+@media (min-width: 1024px) {
   .page {
     grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
-    padding-inline: var(--space-5);
   }
-}
 
-/* Móvil/tablet: el conejo sigue visible, debajo y con altura propia. */
-@media (max-width: 899px) {
-  .page > :last-child {
-    max-width: 30rem;
-    width: 100%;
-    margin-inline: auto;
+  .main {
+    padding-top: var(--ds-space-6);
   }
 }

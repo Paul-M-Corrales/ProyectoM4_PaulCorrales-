@@ -1,0 +1,78 @@
+.list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ds-space-3);
+  margin: 0;
+  padding: 0;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+  min-width: 0;
+  padding: var(--ds-space-4);
+  list-style: none;
+  border-radius: var(--ds-radius-md);
+}
+
+.green {
+  background: var(--ds-green-soft);
+  --accent: var(--ds-green);
+}
+
+.yellow {
+  background: var(--ds-yellow-soft);
+  --accent: #e0a800;
+}
+
+.violet {
+  background: var(--ds-lavender-soft);
+  --accent: var(--ds-violet);
+}
+
+.icon {
+  display: grid;
+  flex: none;
+  place-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 70%);
+  color: var(--accent);
+}
+
+.text strong {
+  display: block;
+  font-size: 1.9rem;
+  font-weight: var(--ds-weight-black);
+  line-height: 1;
+}
+
+.text small {
+  font-size: var(--ds-text-sm);
+  color: var(--ds-ink-soft);
+}
+
+.dashes {
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  width: 1.2rem;
+  height: 0.28rem;
+  border-radius: 99px;
+  background: var(--accent);
+  box-shadow: 0.35rem 0.55rem 0 var(--accent);
+  transform: rotate(-30deg);
+}
+
+@media (max-width: 599px) {
+  .list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card {
+    padding-block: var(--ds-space-3);
+  }
+}

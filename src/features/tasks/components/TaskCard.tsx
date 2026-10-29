@@ -1,3 +1,4 @@
+import { Icon } from '@/components/ui/Icon'
 import { formatDueDate, isOverdue } from '../logic/dates'
 import type { Task } from '../types'
 import { PriorityBadge } from './PriorityBadge'
@@ -6,13 +7,22 @@ import styles from './task-card.module.css'
 interface Props {
   readonly task: Task
   readonly onToggle: (task: Task) => void
+  readonly onEdit: (task: Task) => void
   readonly onDelete: (task: Task) => void
 }
 
-export function TaskCard({ task, onToggle, onDelete }: Props) {
+export function TaskCard({ task, onToggle, onEdit, onDelete }: Props) {
   const overdue = task.dueDate !== null && !task.completed && isOverdue(task.dueDate)
   return (
     <li className={`${styles.card} ${task.completed ? styles.done : ''}`}>
+      <span
+        className={styles.grip}
+        role="img"
+        aria-label="Reordenar con arrastrar y soltar (disponible cuando se conecte el guardado)"
+        title="Arrastrar y soltar: disponible con el guardado de tareas"
+      >
+        <Icon name="grip" size={18} />
+      </span>
       <input
         className={styles.check}
         type="checkbox"
@@ -23,19 +33,26 @@ export function TaskCard({ task, onToggle, onDelete }: Props) {
       <div className={styles.body}>
         <h3 className={styles.title}>{task.title}</h3>
         {task.description && <p className={styles.description}>{task.description}</p>}
-        <div className={styles.meta}>
-          <PriorityBadge priority={task.priority} />
-          {task.dueDate && (
-            <time className={overdue ? styles.overdue : styles.date} dateTime={task.dueDate}>
-              {overdue ? 'Venció el ' : 'Para el '}
-              {formatDueDate(task.dueDate)}
-            </time>
-          )}
-        </div>
       </div>
-      <button type="button" className={styles.remove} onClick={() => onDelete(task)}>
-        Eliminar<span className={styles.sr}> «{task.title}»</span>
-      </button>
+      <div className={styles.meta}>
+        <PriorityBadge priority={task.priority} />
+        {task.dueDate && (
+          <time className={overdue ? styles.overdue : styles.date} dateTime={task.dueDate}>
+            <Icon name="calendar" size={16} />
+            {formatDueDate(task.dueDate)}
+          </time>
+        )}
+      </div>
+      <div className={styles.actions}>
+        <button type="button" className={styles.action} onClick={() => onEdit(task)}>
+          <Icon name="pencil" size={16} />
+          <span className={styles.sr}>Editar «{task.title}»</span>
+        </button>
+        <button type="button" className={styles.action} onClick={() => onDelete(task)}>
+          <Icon name="trash" size={16} />
+          <span className={styles.sr}>Eliminar «{task.title}»</span>
+        </button>
+      </div>
     </li>
   )
 }

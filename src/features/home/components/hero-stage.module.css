@@ -1,0 +1,30 @@
+.stage {
+  position: relative;
+  isolation: isolate;
+  min-height: 460px;
+  height: clamp(460px, 66vw, 680px);
+}
+
+.mascot {
+  position: absolute;
+  inset: -16% 4% -4%;
+  z-index: 2;
+  height: auto;
+  min-height: 0;
+}
+
+.caption {
+  position: absolute;
+  right: 0;
+  bottom: -1.4rem;
+  margin: 0;
+  font-size: var(--ds-text-xs);
+  color: var(--ds-muted);
+}
+
+@media (min-width: 1024px) {
+  .stage {
+    height: min(46vw, 680px);
+    min-height: 520px;
+  }
+}

@@ -6,6 +6,7 @@ import { AuthProvider } from '@/features/auth/context/AuthProvider'
 import { createAuthGateway } from '@/features/auth/services/createAuthGateway'
 import '@/styles/tokens.css'
 import '@/styles/base.css'
+import '@/styles/ds/index.css'
 
 const container = document.getElementById('root')
 if (!container) throw new Error('No se encontró el elemento #root')

@@ -41,7 +41,7 @@ describe('progressOf', () => {
 
 describe('fechas y validación', () => {
   it('formatea sin desfase de zona horaria y detecta vencidas', () => {
-    expect(formatDueDate('2026-03-05')).toMatch(/5/)
+    expect(formatDueDate('2026-03-05', new Date(2026, 2, 1))).toMatch(/5 mar/)
     expect(isOverdue('2026-03-05', new Date(2026, 2, 6))).toBe(true)
     expect(isOverdue('2026-03-06', new Date(2026, 2, 6))).toBe(false)
   })

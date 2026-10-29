@@ -15,6 +15,7 @@
     "validate": "npm run lint && npm run typecheck && npm run test && npm run check:lines && npm run check:glb && npm run build"
   },
   "dependencies": {
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
     "firebase": "^13.1.0",

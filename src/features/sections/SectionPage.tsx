@@ -1,21 +1,23 @@
 import type { ReactNode } from 'react'
+import { Eyebrow } from '@/components/ui/Eyebrow'
 import styles from './section-page.module.css'
 
 interface Props {
   readonly title: string
-  readonly status: string
-  readonly children?: ReactNode
+  readonly lead: string
+  readonly children: ReactNode
 }
 
-/** Pantalla con estado inicial honesto: explica qué falta sin inventar datos. */
-export function SectionPage({ title, status, children }: Props) {
+/** Estructura común de Reportes y Configuración: título editorial y tarjetas limpias. */
+export function SectionPage({ title, lead, children }: Props) {
   return (
     <section className={styles.page} aria-labelledby="section-title">
-      <h1 id="section-title" className={styles.title}>{title}</h1>
-      <div className={styles.panel}>
-        <p className={styles.status}>{status}</p>
-        {children}
-      </div>
+      <header className={styles.header}>
+        <Eyebrow>Tu día, en movimiento</Eyebrow>
+        <h1 id="section-title" className={styles.title}>{title}</h1>
+        <p className={styles.lead}>{lead}</p>
+      </header>
+      {children}
     </section>
   )
 }
