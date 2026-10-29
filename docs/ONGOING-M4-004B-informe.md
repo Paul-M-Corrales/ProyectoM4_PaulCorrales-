@@ -30,3 +30,11 @@ Laboratorio aislado `/dev/ride` (solo desarrollo) intacto.
 - El conejo del panel de Mis tareas es algo más pequeño y está más centrado que en el boceto (limitado por la
   altura del viewport y la cámara compartida).
 - Drag & drop, vista Tablero y persistencia están preparados pero deshabilitados hasta el ticket Firestore.
+
+## ONGOING-M4-004C (corrección)
+- **Acceso directo a Inicio:** no se perdió el registro. Firebase Auth conserva la sesión (persistencia por
+  defecto del SDK, IndexedDB) y `PublicOnlyRoute` redirige a Inicio a quien ya la tiene, incluido `/registro`.
+  Sin sesión, el login muestra «Crear cuenta» → `/registro`. Se mantuvo ese comportamiento (documentado y
+  cubierto por `tests/auth/accessFlow.test.tsx`). Para ver el registro: cerrar sesión desde el menú de cuenta.
+- Inicio: eliminadas todas las tarjetas flotantes y sus cifras; formas geométricas reubicadas detrás del conejo,
+  lejos de manos y cara; escenario ampliado (`inset: -10% 0 -2%`) para ver brazos, puño, cara y orejas.

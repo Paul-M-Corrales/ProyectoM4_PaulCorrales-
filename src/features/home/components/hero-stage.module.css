@@ -7,19 +7,10 @@
 
 .mascot {
   position: absolute;
-  inset: -16% 4% -4%;
+  inset: -10% 0 -2%;
   z-index: 2;
   height: auto;
   min-height: 0;
-}
-
-.caption {
-  position: absolute;
-  right: 0;
-  bottom: -1.4rem;
-  margin: 0;
-  font-size: var(--ds-text-xs);
-  color: var(--ds-muted);
 }
 
 @media (min-width: 1024px) {

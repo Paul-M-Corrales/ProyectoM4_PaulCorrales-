@@ -59,23 +59,23 @@
 
 .squiggle {
   position: absolute;
-  left: 2%;
-  top: 46%;
-  width: 40%;
+  left: 4%;
+  top: 62%;
+  width: 34%;
 }
 
 .asterisk {
   position: absolute;
-  right: 2%;
-  top: 44%;
-  width: 11%;
+  left: 3%;
+  bottom: 14%;
+  width: 9%;
 }
 
 .scribble {
   position: absolute;
-  left: 40%;
-  bottom: 10%;
-  width: 9%;
+  left: 3%;
+  top: 4%;
+  width: 8%;
 }
 
 .dash {
@@ -86,15 +86,15 @@
 }
 
 .dashGreen {
-  left: 0;
-  top: 22%;
+  left: 2%;
+  bottom: 42%;
   background: var(--ds-green);
   transform: rotate(48deg);
 }
 
 .dashYellow {
-  right: 24%;
-  top: 14%;
+  right: 4%;
+  top: 3%;
   background: var(--ds-yellow);
   transform: rotate(-52deg);
 }
