@@ -1,0 +1,80 @@
+.form {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border-glass);
+  border-radius: var(--radius-lg);
+  background: rgb(255 255 255 / 6%);
+  backdrop-filter: blur(14px);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-3);
+}
+
+.field {
+  display: grid;
+  gap: var(--space-1);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.field input,
+.field textarea,
+.field select {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-md);
+  background: var(--field-bg);
+  color: var(--color-white);
+  font: inherit;
+  color-scheme: dark;
+}
+
+.field select option {
+  background: var(--color-ink-raised);
+}
+
+.error {
+  color: var(--color-danger);
+}
+
+.notice {
+  margin: 0;
+  color: var(--color-notice);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+.cancel,
+.save {
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancel {
+  border: 1px solid var(--field-border);
+  background: transparent;
+  color: var(--color-white);
+}
+
+.save {
+  border: 0;
+  background: var(--gradient-brand);
+  color: var(--color-white);
+}
+
+.save:disabled {
+  opacity: 0.65;
+  cursor: progress;
+}

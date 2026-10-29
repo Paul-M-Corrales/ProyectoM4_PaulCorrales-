@@ -1,0 +1,119 @@
+.card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  list-style: none;
+  border: var(--border-glass);
+  border-radius: var(--radius-lg);
+  background: rgb(255 255 255 / 6%);
+  backdrop-filter: blur(14px);
+  transition: border-color var(--duration-base) var(--ease-out);
+}
+
+.card:hover {
+  border-color: rgb(255 110 199 / 45%);
+}
+
+.done .title {
+  text-decoration: line-through;
+  color: var(--color-text-muted);
+}
+
+.check {
+  width: 1.3rem;
+  height: 1.3rem;
+  margin-top: 0.15rem;
+  accent-color: var(--color-fuchsia);
+}
+
+.body {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.title {
+  font-size: 1.05rem;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  margin: 0;
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  font-size: 0.85rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.7rem;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 8%);
+}
+
+.badgeText {
+  color: var(--color-white);
+}
+
+.dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.alta {
+  color: var(--color-pink);
+}
+
+.media {
+  color: var(--color-violet);
+}
+
+.baja {
+  color: var(--color-accent-blue);
+}
+
+.date {
+  color: var(--color-text-muted);
+}
+
+.overdue {
+  color: var(--color-danger);
+}
+
+.remove {
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.remove:hover {
+  color: var(--color-white);
+  border-color: var(--color-pink);
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

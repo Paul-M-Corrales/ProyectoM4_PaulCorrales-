@@ -13,7 +13,7 @@ export function resultToStatus(result: AuthResult): FormStatus {
 const PUBLIC_ONLY_PATHS = ['/', '/registro', '/recuperar-password']
 
 /** Evita redirecciones a otro origen o de vuelta a una pantalla pública: solo rutas internas privadas. */
-export function safeRedirectPath(candidate: unknown, fallback = '/dashboard'): string {
+export function safeRedirectPath(candidate: unknown, fallback = '/inicio'): string {
   if (typeof candidate !== 'string') return fallback
   const internal = candidate.startsWith('/') && !candidate.startsWith('//') && !candidate.includes('\\')
   return internal && !PUBLIC_ONLY_PATHS.includes(candidate) ? candidate : fallback

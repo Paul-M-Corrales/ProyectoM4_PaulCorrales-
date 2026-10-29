@@ -12,6 +12,7 @@ interface Props {
   readonly clip: ClipName
   readonly playId: number
   readonly reducedMotion: boolean
+  readonly speed: number
   readonly getYaw: (() => number) | undefined
   readonly onClipFinished: ((clip: ClipName) => void) | undefined
   readonly onReady: () => void
@@ -27,7 +28,7 @@ function configure(action: AnimationAction, clip: ClipName, paused: boolean) {
   action.paused = paused
 }
 
-export function MascotModel({ clip, playId, reducedMotion, getYaw, onClipFinished, onReady }: Props) {
+export function MascotModel({ clip, playId, reducedMotion, speed, getYaw, onClipFinished, onReady }: Props) {
   const { scene, animations } = useGLTF(MASCOT_URL)
   const model = useMemo(() => {
     const copy = clone(scene)
@@ -38,6 +39,13 @@ export function MascotModel({ clip, playId, reducedMotion, getYaw, onClipFinishe
   const yawRef = useRef<Group>(null)
   const finishedRef = useRef(onClipFinished)
   const mounted = useRef(false)
+  const actionRef = useRef<AnimationAction | null>(null)
+  const speedRef = useRef(speed)
+
+  useEffect(() => {
+    speedRef.current = speed
+    if (actionRef.current) actionRef.current.timeScale = speed
+  }, [speed])
 
   useEffect(() => {
     finishedRef.current = onClipFinished
@@ -69,6 +77,8 @@ export function MascotModel({ clip, playId, reducedMotion, getYaw, onClipFinishe
     if (!source) return
     const action = mixer.clipAction(source)
     configure(action, clip, reducedMotion)
+    action.timeScale = speedRef.current
+    actionRef.current = action
     const onFinished = (event: { action: AnimationAction }) => {
       if (event.action === action) finishedRef.current?.(clip)
     }
@@ -76,6 +86,7 @@ export function MascotModel({ clip, playId, reducedMotion, getYaw, onClipFinishe
     return () => {
       mixer.removeEventListener('finished', onFinished)
       action.fadeOut(CROSSFADE_SEC)
+      if (actionRef.current === action) actionRef.current = null
     }
   }, [animations, mixer, clip, playId, reducedMotion])
 

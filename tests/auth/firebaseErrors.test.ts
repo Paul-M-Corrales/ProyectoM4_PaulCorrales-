@@ -40,11 +40,11 @@ describe('traducción de errores de Firebase', () => {
 
 describe('safeRedirectPath', () => {
   it('acepta rutas privadas internas y rechaza el resto', () => {
-    expect(safeRedirectPath('/dashboard/tareas')).toBe('/dashboard/tareas')
-    expect(safeRedirectPath('//evil.com')).toBe('/dashboard')
-    expect(safeRedirectPath('https://evil.com')).toBe('/dashboard')
-    expect(safeRedirectPath('/')).toBe('/dashboard')
-    expect(safeRedirectPath('/registro')).toBe('/dashboard')
-    expect(safeRedirectPath(undefined)).toBe('/dashboard')
+    expect(safeRedirectPath('/tareas/detalle')).toBe('/tareas/detalle')
+    expect(safeRedirectPath('//evil.com')).toBe('/inicio')
+    expect(safeRedirectPath('https://evil.com')).toBe('/inicio')
+    expect(safeRedirectPath('/')).toBe('/inicio')
+    expect(safeRedirectPath('/registro')).toBe('/inicio')
+    expect(safeRedirectPath(undefined)).toBe('/inicio')
   })
 })

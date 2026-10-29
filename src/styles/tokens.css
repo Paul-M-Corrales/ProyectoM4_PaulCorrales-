@@ -49,4 +49,8 @@
   --color-danger: #ff8fa3;
   --color-notice: #c4b5fd;
   --glow-violet: 0 0 28px rgb(139 92 246 / 45%);
+
+  /* Pantallas privadas */
+  --color-ink-blue: #060b1f;
+  --color-accent-blue: #38bdf8;
 }

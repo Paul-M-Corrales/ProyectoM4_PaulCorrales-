@@ -3,14 +3,23 @@ import { Navigate, Route, Routes } from 'react-router'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { RegisterPage } from '@/features/auth/pages/RegisterPage'
 import { ResetPasswordPage } from '@/features/auth/pages/ResetPasswordPage'
-import { DashboardPage } from '@/features/dashboard/pages/DashboardPage'
+import { HomePage } from '@/features/home/pages/HomePage'
+import { ReportsPage } from '@/features/sections/ReportsPage'
+import { SettingsPage } from '@/features/sections/SettingsPage'
+import { TasksPage } from '@/features/tasks/pages/TasksPage'
+import { AppLayout } from './layout/AppLayout'
 import { ProtectedRoute } from './routes/ProtectedRoute'
 import { PublicOnlyRoute } from './routes/PublicOnlyRoute'
 
-// Solo existe en desarrollo: Vite sustituye DEV por false en el build y elimina la ruta y su chunk.
+// Solo existen en desarrollo: Vite sustituye DEV por false en el build y elimina las rutas y sus chunks.
 const MascotDevPage = import.meta.env.DEV
   ? lazy(() =>
       import('@/features/mascot/dev/MascotDevPage').then((m) => ({ default: m.MascotDevPage })),
+    )
+  : null
+const RideDevPage = import.meta.env.DEV
+  ? lazy(() =>
+      import('@/features/mascot/dev/RideDevPage').then((m) => ({ default: m.RideDevPage })),
     )
   : null
 
@@ -24,9 +33,16 @@ export function AppRoutes() {
           <Route path="/recuperar-password" element={<ResetPasswordPage />} />
         </Route>
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route element={<AppLayout />}>
+            <Route path="/inicio" element={<HomePage />} />
+            <Route path="/tareas" element={<TasksPage />} />
+            <Route path="/reportes" element={<ReportsPage />} />
+            <Route path="/configuracion" element={<SettingsPage />} />
+          </Route>
+          <Route path="/dashboard" element={<Navigate to="/inicio" replace />} />
         </Route>
         {MascotDevPage && <Route path="/dev/mascot" element={<MascotDevPage />} />}
+        {RideDevPage && <Route path="/dev/ride" element={<RideDevPage />} />}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>

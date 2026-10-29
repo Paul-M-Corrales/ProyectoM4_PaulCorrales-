@@ -12,6 +12,7 @@ export function Mascot({
   playId = 0,
   label,
   reducedMotion = false,
+  speed = 1,
   getYaw,
   onClipFinished,
   onStatusChange,
@@ -48,6 +49,7 @@ export function Mascot({
               clip={clip}
               playId={playId}
               reducedMotion={reducedMotion}
+              speed={speed}
               getYaw={getYaw}
               onClipFinished={onClipFinished}
               onReady={handleReady}

@@ -1,0 +1,37 @@
+import type { ClipName } from '../contracts'
+
+/** Progreso real de tareas; lo calculará la capa de datos (Firestore) en el siguiente ticket. */
+export interface TaskProgress {
+  readonly total: number
+  readonly completed: number
+}
+
+export type RideClip = Extract<ClipName, 'ride-idle' | 'ride' | 'ride-celebrate'>
+
+export interface RideState {
+  readonly clip: RideClip
+  /** Multiplicador de velocidad del clip. */
+  readonly speed: number
+}
+
+export const MIN_PEDAL_SPEED = 0.6
+export const MAX_PEDAL_SPEED = 2.2
+
+const safeCount = (value: number) => (Number.isFinite(value) && value > 0 ? Math.floor(value) : 0)
+
+/** Fracción completada en [0, 1]. Sin tareas no hay progreso: 0. */
+export function progressRatio({ total, completed }: TaskProgress): number {
+  const all = safeCount(total)
+  if (all === 0) return 0
+  return Math.min(safeCount(completed), all) / all
+}
+
+/**
+ * 0 % (o sin tareas): reposo. Parcial: pedaleo cada vez más rápido. 100 %: celebración.
+ */
+export function rideStateFor(progress: TaskProgress): RideState {
+  const ratio = progressRatio(progress)
+  if (ratio === 0) return { clip: 'ride-idle', speed: 1 }
+  if (ratio === 1) return { clip: 'ride-celebrate', speed: 1 }
+  return { clip: 'ride', speed: MIN_PEDAL_SPEED + (MAX_PEDAL_SPEED - MIN_PEDAL_SPEED) * ratio }
+}

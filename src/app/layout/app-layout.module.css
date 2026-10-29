@@ -1,0 +1,10 @@
+.shell {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+
+.content {
+  min-width: 0;
+}

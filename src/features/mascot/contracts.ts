@@ -29,6 +29,8 @@ export interface MascotProps {
   readonly playId?: number
   /** Texto accesible que describe a la mascota. */
   readonly label: string
+  /** Multiplicador de velocidad del clip (1 = nominal). */
+  readonly speed?: number
   /** Congela la animación (prefers-reduced-motion). */
   readonly reducedMotion?: boolean
   /** Giro (rad) sobre el eje vertical, leído en cada fotograma; 0 = de frente a la cámara. */

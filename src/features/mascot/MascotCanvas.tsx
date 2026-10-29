@@ -4,7 +4,7 @@ import { usePageVisible } from '@/hooks/usePageVisible'
 import { MascotModel } from './MascotModel'
 import type { MascotProps } from './contracts'
 
-type Props = Pick<MascotProps, 'clip' | 'playId' | 'reducedMotion' | 'getYaw' | 'onClipFinished'> & {
+type Props = Pick<MascotProps, 'clip' | 'playId' | 'reducedMotion' | 'speed' | 'getYaw' | 'onClipFinished'> & {
   readonly onReady: () => void
 }
 
@@ -12,6 +12,7 @@ export default function MascotCanvas({
   clip,
   playId = 0,
   reducedMotion = false,
+  speed = 1,
   getYaw,
   onClipFinished,
   onReady,
@@ -34,6 +35,7 @@ export default function MascotCanvas({
           clip={clip}
           playId={playId}
           reducedMotion={reducedMotion}
+          speed={speed}
           getYaw={getYaw}
           onClipFinished={onClipFinished}
           onReady={onReady}

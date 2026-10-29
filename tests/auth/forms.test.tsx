@@ -23,7 +23,7 @@ describe('registro', () => {
       expect(gateway.signUpWithEmail).toHaveBeenCalledWith('ana@dominio.com', 'secreta123'),
     )
     act(() => gateway.emit(USER))
-    expect(await screen.findByRole('heading', { name: /Bienvenido/ })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: /Organizá tus tareas/ })).toBeInTheDocument()
   })
 
   it('valores inválidos no llegan al gateway y muestran errores en español', async () => {
