@@ -56,3 +56,8 @@ Huesos: `mixamorigRight{Arm,ForeArm,Hand,HandThumb1,HandThumb2}` y `mixamorigRig
 Eliminados: saludo, puño, impulsos, brazo izquierdo, torso/cuello/cabeza y el escalado de manos. El clip solo
 contiene rotaciones. Comparación: `docs/screens/m4-004e-referencia-vs-glb.png`.
 Diferencias con la imagen: el puño del GLB es más delgado y el antebrazo queda algo más abierto hacia fuera.
+
+## ONGOING-M4-004F (sin gestos de bienvenida)
+El Product Owner rechazó todas las variantes con brazos levantados. Se eliminó el clip procedural `welcome`
+(`features/mascot/welcome/`, su test y su tipo). Inicio muestra `idle` de forma permanente: mirada al frente y
+ambos brazos abajo. Con reduced-motion el idle queda pausado. El GLB y los clips `ride-*` no se tocaron.

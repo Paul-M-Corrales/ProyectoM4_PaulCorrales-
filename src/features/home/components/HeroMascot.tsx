@@ -1,22 +1,18 @@
-import { Mascot, useClipSequence, type ClipName } from '@/features/mascot'
+import { Mascot } from '@/features/mascot'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 import styles from './hero-mascot.module.css'
 
-/** El conejo entra, saluda, levanta el puño y queda en idle sin repetir el saludo. */
-const HERO_SEQUENCE: readonly ClipName[] = ['welcome', 'idle']
-
+/** El conejo permanece en postura natural (idle): mira al frente con ambos brazos abajo, sin gestos. */
 export function HeroMascot({ className }: { readonly className?: string | undefined }) {
   const reducedMotion = usePrefersReducedMotion()
-  const sequence = useClipSequence(HERO_SEQUENCE, { reducedMotion })
 
   return (
     <div className={`${styles.entrance} ${className ?? ''}`}>
       <Mascot
-        clip={sequence.clip}
-        playId={sequence.playId}
-        label="Conejo mascota de On-going saludando"
+        clip="idle"
+        playId={0}
+        label="Conejo mascota de On-going"
         reducedMotion={reducedMotion}
-        onClipFinished={sequence.advance}
       />
     </div>
   )

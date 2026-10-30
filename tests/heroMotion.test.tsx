@@ -11,14 +11,8 @@ function mockReducedMotion(reduced: boolean) {
 }
 
 describe('mascota de Inicio', () => {
-  it('con movimiento normal arranca con el clip welcome', () => {
-    mockReducedMotion(false)
-    const { container } = render(<HeroMascot />)
-    expect(container.querySelector('[data-clip]')).toHaveAttribute('data-clip', 'welcome')
-  })
-
-  it('con prefers-reduced-motion muestra directamente idle', () => {
-    mockReducedMotion(true)
+  it.each([false, true])('queda en idle (brazos abajo, sin gestos) con reduced-motion=%s', (reduced) => {
+    mockReducedMotion(reduced)
     const { container } = render(<HeroMascot />)
     expect(container.querySelector('[data-clip]')).toHaveAttribute('data-clip', 'idle')
   })

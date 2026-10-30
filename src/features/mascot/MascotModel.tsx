@@ -7,7 +7,6 @@ import { disposeObject } from '@/lib/disposeObject'
 import { BIKE_NODE_NAME, CLIPS, CROSSFADE_SEC, MASCOT_URL } from './clips'
 import type { ClipName } from './contracts'
 import { normalizeModel } from './normalizeModel'
-import { useWelcomeOverlay } from './welcome/useWelcomeOverlay'
 
 interface Props {
   readonly clip: ClipName
@@ -74,15 +73,14 @@ export function MascotModel({ clip, playId, reducedMotion, speed, getYaw, onClip
   }, [model, clip])
 
   useEffect(() => {
-    const base: ClipName = clip === 'welcome' ? 'idle' : clip
-    const source = AnimationClip.findByName(animations, base)
+    const source = AnimationClip.findByName(animations, clip)
     if (!source) return
     const action = mixer.clipAction(source)
-    configure(action, base, reducedMotion)
+    configure(action, clip, reducedMotion)
     action.timeScale = speedRef.current
     actionRef.current = action
     const onFinished = (event: { action: AnimationAction }) => {
-      if (event.action === action) finishedRef.current?.(base)
+      if (event.action === action) finishedRef.current?.(clip)
     }
     mixer.addEventListener('finished', onFinished)
     return () => {
@@ -91,15 +89,6 @@ export function MascotModel({ clip, playId, reducedMotion, speed, getYaw, onClip
       if (actionRef.current === action) actionRef.current = null
     }
   }, [animations, mixer, clip, playId, reducedMotion])
-
-  useWelcomeOverlay({
-    mixer,
-    animations,
-    active: clip === 'welcome',
-    playId,
-    paused: reducedMotion,
-    onFinished: () => finishedRef.current?.('welcome'),
-  })
 
   useFrame((_, delta) => {
     mixer.update(delta)

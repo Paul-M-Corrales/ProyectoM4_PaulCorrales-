@@ -1,5 +1,4 @@
 import type { ClipConfig, ClipName } from './contracts'
-import { WELCOME_DURATION } from './welcome/welcomePose'
 
 export const MASCOT_URL = '/mascot/rabbit.glb'
 export const BIKE_NODE_NAME = 'Bike'
@@ -14,7 +13,6 @@ export const CLIPS: Readonly<Record<ClipName, ClipConfig>> = {
   'ride-idle': { repetitions: Infinity, bike: true, durationSec: 3.03 },
   'ride-mount': { repetitions: 1, bike: true, durationSec: 3.33 },
   'ride-celebrate': { repetitions: 1, bike: true, durationSec: 3.5 },
-  welcome: { repetitions: 1, bike: false, durationSec: WELCOME_DURATION },
 }
 
 /** Secuencia definitiva de bienvenida del login. */
