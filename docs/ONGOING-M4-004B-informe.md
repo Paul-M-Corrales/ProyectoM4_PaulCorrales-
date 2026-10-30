@@ -38,3 +38,13 @@ Laboratorio aislado `/dev/ride` (solo desarrollo) intacto.
   cubierto por `tests/auth/accessFlow.test.tsx`). Para ver el registro: cerrar sesión desde el menú de cuenta.
 - Inicio: eliminadas todas las tarjetas flotantes y sus cifras; formas geométricas reubicadas detrás del conejo,
   lejos de manos y cara; escenario ampliado (`inset: -10% 0 -2%`) para ver brazos, puño, cara y orejas.
+
+## ONGOING-M4-004D (pulgar arriba + puño)
+Causa de los brazos «quebrados»: el saludo levantaba el brazo a ~108° de abducción con el antebrazo a 88°, lo
+que arrugaba la manga y el hombro. Nueva secuencia con abducción moderada (60°) y codo ~95°.
+Huesos: `mixamorig{Right,Left}{Arm,ForeArm,Hand}`, `…HandThumb1/2`, `…Hand{Index,Middle,Ring,Pinky}1-3`,
+`Spine2`, `Neck`, `Head` (+ escala de mano ×1,25 como énfasis). Ejes calibrados con rejillas de poses: Z de
+brazo/antebrazo abre y flexiona (espejado en el izquierdo); Z de dedos cierra; Z negativo del pulgar derecho lo
+levanta, positivo lo remete. Secuencia (5,6 s): sube el brazo derecho → pulgar arriba sostenido (~1,6 s) →
+baja y sube el puño izquierdo → dos impulsos → reposo. Solo en Inicio; reduced-motion muestra `idle`.
+Limitación: el pulgar del conejo es fino; se refuerza con escala de mano (animada, no destructiva).

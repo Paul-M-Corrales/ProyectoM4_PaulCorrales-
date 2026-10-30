@@ -8,7 +8,9 @@ function fakeIdle(): AnimationClip {
   return new AnimationClip('idle', 1, tracks)
 }
 
-describe('animación welcome', () => {
+const z = (t: number, bone: string) => welcomePose(t)[bone]?.[2] ?? 0
+
+describe('animación welcome (pulgar arriba + puño)', () => {
   it('es un clip finito de una sola pasada, sin bicicleta', () => {
     expect(CLIPS.welcome).toMatchObject({ repetitions: 1, bike: false, durationSec: WELCOME_DURATION })
   })
@@ -19,28 +21,58 @@ describe('animación welcome', () => {
     }
   })
 
-  it('saluda con el brazo derecho y levanta el puño con el izquierdo, en ese orden', () => {
-    const wave = welcomePose(1.2)
-    const fist = welcomePose(3.6)
-    expect(Math.abs(wave.mixamorigRightArm?.[2] ?? 0)).toBeGreaterThan(90)
-    expect(Math.abs(wave.mixamorigLeftArm?.[2] ?? 0)).toBeLessThan(1)
-    expect(Math.abs(fist.mixamorigLeftArm?.[2] ?? 0)).toBeGreaterThan(90)
-    expect(Math.abs(fist.mixamorigRightArm?.[2] ?? 0)).toBeLessThan(1)
-    expect(Math.abs(fist.mixamorigLeftHandIndex2?.[2] ?? 0)).toBeGreaterThan(60)
+  it('1) pulgar arriba con el brazo derecho: codo flexionado, dedos cerrados y pulgar extendido', () => {
+    expect(z(1.6, 'mixamorigRightArm')).toBeGreaterThan(55)
+    expect(z(1.6, 'mixamorigRightForeArm')).toBeGreaterThan(85)
+    expect(z(1.6, 'mixamorigRightHandIndex2')).toBeGreaterThan(75)
+    expect(z(1.6, 'mixamorigRightHandThumb1')).toBeLessThan(-35)
+    expect(Math.abs(z(1.6, 'mixamorigLeftArm'))).toBeLessThan(1)
   })
 
-  it('el saludo oscila (el antebrazo no queda quieto)', () => {
-    const samples = [0.9, 1.0, 1.1, 1.2, 1.3].map((t) => welcomePose(t).mixamorigRightForeArm?.[2] ?? 0)
-    expect(Math.max(...samples) - Math.min(...samples)).toBeGreaterThan(15)
+  it('el pulgar se mantiene visible un rato antes de pasar al puño', () => {
+    const held = [1.0, 1.4, 1.8, 2.2].every((t) => z(t, 'mixamorigRightHandThumb1') < -30)
+    expect(held).toBe(true)
+  })
+
+  it('2) puño con el brazo izquierdo: pulgar remetido y dedos cerrados', () => {
+    expect(z(3.6, 'mixamorigLeftArm')).toBeLessThan(-60)
+    expect(z(3.6, 'mixamorigLeftHandIndex2')).toBeLessThan(-75)
+    expect(z(3.6, 'mixamorigLeftHandThumb1')).toBeLessThan(-30)
+    expect(Math.abs(z(3.6, 'mixamorigRightArm'))).toBeLessThan(1)
+  })
+
+  it('anatomía: sin codos hiperextendidos ni brazos fuera de rango', () => {
+    for (let t = 0; t <= WELCOME_DURATION; t += 0.05) {
+      expect(z(t, 'mixamorigRightForeArm')).toBeGreaterThanOrEqual(-1)
+      expect(z(t, 'mixamorigLeftForeArm')).toBeLessThanOrEqual(1)
+      expect(Math.abs(z(t, 'mixamorigRightArm'))).toBeLessThanOrEqual(75)
+      expect(Math.abs(z(t, 'mixamorigLeftArm'))).toBeLessThanOrEqual(85)
+      expect(Math.abs(z(t, 'mixamorigRightForeArm'))).toBeLessThanOrEqual(110)
+      expect(Math.abs(z(t, 'mixamorigLeftForeArm'))).toBeLessThanOrEqual(115)
+    }
+  })
+
+  it('suave: brazos ≤ 6°/fotograma y dedos ≤ 7°/fotograma a 30 fps', () => {
+    let previous = welcomePose(0)
+    for (let i = 1; i <= Math.round(WELCOME_DURATION * 30); i += 1) {
+      const current = welcomePose(i / 30)
+      for (const [bone, delta] of Object.entries(current)) {
+        const before = previous[bone] ?? [0, 0, 0]
+        for (let axis = 0; axis < 3; axis += 1) {
+          expect(Math.abs((delta[axis] ?? 0) - (before[axis] ?? 0))).toBeLessThan(/Arm$/.test(bone) || /ForeArm$/.test(bone) ? 6 : 7)
+        }
+      }
+      previous = current
+    }
   })
 
   it('construye un clip sobre huesos reales a 30 fps y no reutiliza point', () => {
     const clip = buildWelcomeClip(fakeIdle())
     expect(clip.name).toBe('welcome')
     expect(clip.duration).toBeCloseTo(WELCOME_DURATION)
-    expect(clip.tracks).toHaveLength(WELCOME_BONES.length)
+    expect(clip.tracks).toHaveLength(WELCOME_BONES.length + 2)
     expect(clip.tracks[0]?.times).toHaveLength(Math.round(WELCOME_DURATION * 30) + 1)
-    expect(clip.tracks.every((t) => t.name.startsWith('mixamorig') && t.name.endsWith('.quaternion'))).toBe(true)
+    expect(clip.tracks.every((t) => t.name.startsWith('mixamorig') && /.(quaternion|scale)$/.test(t.name))).toBe(true)
   })
 
   it('ignora huesos que no existan en idle', () => {

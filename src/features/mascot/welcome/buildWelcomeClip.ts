@@ -1,5 +1,5 @@
-import { AnimationClip, Euler, Quaternion, QuaternionKeyframeTrack } from 'three'
-import { WELCOME_BONES, WELCOME_DURATION, welcomePose } from './welcomePose'
+import { AnimationClip, Euler, Quaternion, QuaternionKeyframeTrack, VectorKeyframeTrack } from 'three'
+import { HAND_SCALE_BONES, WELCOME_BONES, WELCOME_DURATION, handScale, welcomePose } from './welcomePose'
 
 const FPS = 30
 const DEG = Math.PI / 180
@@ -15,7 +15,8 @@ function restQuaternion(idle: AnimationClip, bone: string): Quaternion | null {
 
 /**
  * Crea el clip `welcome` sobre los huesos reales del rig, sin tocar el GLB.
- * Cada pista = reposo de idle × rotación local de welcomePose(t), muestreada a 30 fps.
+ * Cada pista de rotación = reposo de idle × rotación local de welcomePose(t), muestreada a 30 fps;
+ * las manos añaden una pista de escala uniforme para dar énfasis al gesto.
  */
 export function buildWelcomeClip(idle: AnimationClip): AnimationClip {
   const frames = Math.round(WELCOME_DURATION * FPS)
@@ -32,5 +33,13 @@ export function buildWelcomeClip(idle: AnimationClip): AnimationClip {
     }
     return [new QuaternionKeyframeTrack(`${bone}.quaternion`, times, values)]
   })
-  return new AnimationClip('welcome', WELCOME_DURATION, tracks)
+  const scales = HAND_SCALE_BONES.flatMap((bone) => {
+    if (!restQuaternion(idle, bone)) return []
+    const values = times.flatMap((t) => {
+      const s = handScale(t)[bone]
+      return [s, s, s]
+    })
+    return [new VectorKeyframeTrack(`${bone}.scale`, times, values)]
+  })
+  return new AnimationClip('welcome', WELCOME_DURATION, [...tracks, ...scales])
 }
