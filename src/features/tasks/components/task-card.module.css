@@ -130,3 +130,12 @@
     grid-area: date;
   }
 }
+
+/* Tarjeta que se está moviendo: elevada y con borde discontinuo; las demás se apartan y marcan dónde caerá. */
+.dragging {
+  position: relative;
+  z-index: 2;
+  border: 2px dashed var(--ds-ink);
+  box-shadow: var(--ds-shadow-sm);
+  opacity: 0.92;
+}

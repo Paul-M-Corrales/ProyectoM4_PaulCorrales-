@@ -18,7 +18,7 @@ export function useTaskView(tasks: readonly Task[]) {
   const progress = useMemo(() => progressOf(tasks), [tasks])
   const counts = useMemo(() => countTasks(tasks), [tasks])
 
-  return { query, setQuery, filter, setFilter, sort, setSort, visible, groups, progress, counts }
+  return { all: tasks, query, setQuery, filter, setFilter, sort, setSort, visible, groups, progress, counts }
 }
 
 export type TaskView = ReturnType<typeof useTaskView>

@@ -37,6 +37,7 @@ export function useTasks(repository: TaskRepository) {
       create: (draft: Parameters<TaskRepository['create']>[0]) => repository.create(draft),
       update: (id: string, changes: Parameters<TaskRepository['update']>[1]) => repository.update(id, changes),
       remove: (id: string) => repository.remove(id),
+      reorder: (orders: Parameters<TaskRepository['reorder']>[0]) => repository.reorder(orders),
     }
   }, [state, repository])
 }

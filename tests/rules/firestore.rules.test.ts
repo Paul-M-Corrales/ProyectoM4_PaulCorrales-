@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import {
   assertFails, assertSucceeds, initializeTestEnvironment, type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing'
-import { deleteDoc, doc, getDoc, getDocs, collection, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import { deleteDoc, doc, getDoc, getDocs, collection, serverTimestamp, setDoc, updateDoc, writeBatch } from 'firebase/firestore'
 
 let env: RulesTestEnvironment
 
@@ -42,6 +42,20 @@ describe('reglas de Firestore: users/{uid}/tasks', () => {
     await assertSucceeds(getDocs(collection(asA(), 'users/userA/tasks')))
     await assertSucceeds(updateDoc(taskOfA(asA()), { completed: true, updatedAt: serverTimestamp() }))
     await assertSucceeds(deleteDoc(taskOfA(asA())))
+  })
+
+  it('el reordenamiento en lote (order + updatedAt) lo permite el dueño y lo niega a otro usuario', async () => {
+    await seedTaskOfA()
+    await assertSucceeds(setDoc(taskOfA(asA(), 't2'), validTask()))
+    const reorder = (db: ReturnType<typeof asA>) => {
+      const batch = writeBatch(db)
+      for (const [id, order] of [['t1', 2], ['t2', 1]] as const) {
+        batch.update(taskOfA(db, id), { order, updatedAt: serverTimestamp() })
+      }
+      return batch.commit()
+    }
+    await assertFails(reorder(asB()))
+    await assertSucceeds(reorder(asA()))
   })
 
   it('el usuario B no puede leer, listar, editar ni eliminar tareas de A', async () => {

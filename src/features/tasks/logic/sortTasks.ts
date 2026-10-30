@@ -1,6 +1,7 @@
 import type { Priority, Task } from '../types'
+import { byOrder } from './reorder'
 
-export const SORT_KEYS = ['due', 'priority', 'created', 'title'] as const
+export const SORT_KEYS = ['due', 'priority', 'created', 'title', 'custom'] as const
 export type SortKey = (typeof SORT_KEYS)[number]
 
 export const SORT_LABELS: Record<SortKey, string> = {
@@ -8,6 +9,7 @@ export const SORT_LABELS: Record<SortKey, string> = {
   priority: 'Prioridad',
   created: 'Creación',
   title: 'Título',
+  custom: 'Personalizado',
 }
 
 const WEIGHT: Record<Priority, number> = { alta: 0, media: 1, baja: 2 }
@@ -23,6 +25,7 @@ const COMPARATORS: Record<SortKey, (a: Task, b: Task) => number> = {
   due: byDue,
   priority: (a, b) => WEIGHT[a.priority] - WEIGHT[b.priority] || byDue(a, b),
   created: (a, b) => b.createdAt - a.createdAt,
+  custom: byOrder,
   title: (a, b) => a.title.localeCompare(b.title, 'es', { sensitivity: 'base' }),
 }
 

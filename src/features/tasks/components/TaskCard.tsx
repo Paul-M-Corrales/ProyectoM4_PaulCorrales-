@@ -1,3 +1,4 @@
+import type { CSSProperties, ReactNode, Ref } from 'react'
 import { Icon } from '@/components/ui/Icon'
 import { formatDueDate, isOverdue } from '../logic/dates'
 import type { Task } from '../types'
@@ -9,20 +10,31 @@ interface Props {
   readonly onToggle: (task: Task) => void
   readonly onEdit: (task: Task) => void
   readonly onDelete: (task: Task) => void
+  /** Presente solo en el orden Personalizado: el <li> pasa a ser un elemento ordenable. */
+  readonly sortable?: {
+    readonly rootRef: Ref<HTMLLIElement>
+    readonly style: CSSProperties
+    readonly handle: ReactNode
+    readonly dragging: boolean
+  }
 }
 
-export function TaskCard({ task, onToggle, onEdit, onDelete }: Props) {
+export function TaskCard({ task, onToggle, onEdit, onDelete, sortable }: Props) {
   const overdue = task.dueDate !== null && !task.completed && isOverdue(task.dueDate)
   return (
-    <li className={`${styles.card} ${task.completed ? styles.done : ''}`}>
-      <span
+    <li
+      ref={sortable?.rootRef}
+      style={sortable?.style}
+      className={`${styles.card} ${task.completed ? styles.done : ''} ${sortable?.dragging ? styles.dragging : ''}`}
+    >
+      {sortable ? sortable.handle : <span
         className={styles.grip}
         role="img"
-        aria-label="Reordenar con arrastrar y soltar: todavía no disponible"
-        title="Arrastrar y soltar: todavía no disponible"
+        aria-label="Para reordenar, elegí «Personalizado» en Ordenar por"
+        title="Para reordenar, elegí «Personalizado» en Ordenar por"
       >
         <Icon name="grip" size={18} />
-      </span>
+      </span>}
       <input
         className={styles.check}
         type="checkbox"

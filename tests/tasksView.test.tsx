@@ -23,7 +23,7 @@ describe('Mis tareas: vista, errores y cambio de usuario', () => {
     await user.type(screen.getByRole('searchbox'), 'cuaderno')
     expect(screen.queryByText('Alfa')).not.toBeInTheDocument()
     expect(ring()).toHaveTextContent('1/2')
-    expect(repo.calls).toEqual({ create: [], update: [], remove: [] })
+    expect(repo.calls).toEqual({ create: [], update: [], remove: [], reorder: [] })
   })
 
   it('ordena por prioridad y por creación', async () => {

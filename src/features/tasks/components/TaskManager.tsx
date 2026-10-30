@@ -2,11 +2,12 @@ import { useState } from 'react'
 import type { TaskView } from '../hooks/useTaskView'
 import type { TasksStatus } from '../hooks/useTasks'
 import { useTaskFeedback } from '../hooks/useTaskFeedback'
+import { planReorder, type TaskOrder } from '../logic/reorder'
 import type { Task, TaskActionResult, TaskChanges, TaskDraft } from '../types'
 import { FilterTabs } from './FilterTabs'
+import { ListView } from './ListView'
 import { SummaryCards } from './SummaryCards'
 import { TaskForm } from './TaskForm'
-import { TaskGroups } from './TaskGroups'
 import { TasksEmpty } from './TasksEmpty'
 import { TasksHeader } from './TasksHeader'
 import { TasksToolbar } from './TasksToolbar'
@@ -17,6 +18,7 @@ interface Actions {
   readonly create: (draft: TaskDraft) => Promise<TaskActionResult>
   readonly update: (id: string, changes: TaskChanges) => Promise<TaskActionResult>
   readonly remove: (id: string) => Promise<TaskActionResult>
+  readonly reorder: (orders: readonly TaskOrder[]) => Promise<TaskActionResult>
 }
 
 interface Props {
@@ -48,6 +50,11 @@ export function TaskManager({ view, status, loadError, connected, actions, start
       void run(actions.remove(task.id), 'Tarea eliminada.')
     }
   }
+  const reorder = (activeId: string, overId: string) => {
+    // Con filtros activos solo se reordena lo visible; las tareas ocultas conservan su posición.
+    const plan = planReorder(view.all, view.visible, activeId, overId)
+    if (plan.length > 0) void run(actions.reorder(plan), 'Orden guardado.')
+  }
   const emptyVariant = status === 'loading' ? 'loading' : view.counts.total === 0 ? 'none' : 'no-results'
 
   return (
@@ -70,9 +77,11 @@ export function TaskManager({ view, status, loadError, connected, actions, start
       {loadError && <p className={styles.error} role="alert">{loadError}</p>}
       {feedback?.kind === 'error' && <p className={styles.error} role="alert">{feedback.message}</p>}
       {feedback?.kind === 'ok' && <p className={styles.notice} role="status">{feedback.message}</p>}
-      {view.groups.length > 0 ? (
-        <TaskGroups
-          groups={view.groups}
+      {view.visible.length > 0 ? (
+        <ListView
+          custom={view.sort === 'custom'}
+          view={view}
+          onReorder={reorder}
           onToggle={(task) => void run(actions.update(task.id, { completed: !task.completed }), 'Cambios guardados.')}
           onEdit={(task) => {
             setEditing(task)

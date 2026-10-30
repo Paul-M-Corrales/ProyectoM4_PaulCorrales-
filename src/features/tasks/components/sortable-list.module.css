@@ -1,0 +1,35 @@
+.list {
+  display: grid;
+  gap: var(--ds-space-2);
+  margin: 0;
+  padding: 0;
+}
+
+/* Asa de arrastre: único punto que captura el gesto (touch-action:none solo aquí, el resto sigue desplazándose). */
+.handle {
+  display: grid;
+  place-content: center;
+  width: 2rem;
+  height: 2.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--ds-radius-sm);
+  background: transparent;
+  color: var(--ds-muted);
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle:hover {
+  background: var(--ds-canvas);
+  color: var(--ds-ink);
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.handle:focus-visible {
+  outline: 3px solid var(--ds-ink);
+  outline-offset: 2px;
+}

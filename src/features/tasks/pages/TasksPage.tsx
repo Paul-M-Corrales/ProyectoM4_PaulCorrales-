@@ -9,7 +9,7 @@ import styles from './tasks-page.module.css'
 /** Mis tareas: 70 % gestión, 30 % conejo en bici. Los datos llegan en tiempo real desde Firestore. */
 export function TasksPage() {
   const { repository, uid } = useTaskRepository()
-  const { tasks, status, loadError, connected, create, update, remove } = useTasks(repository)
+  const { tasks, status, loadError, connected, create, update, remove, reorder } = useTasks(repository)
   const view = useTaskView(tasks)
   const [params] = useSearchParams()
 
@@ -21,7 +21,7 @@ export function TasksPage() {
           status={status}
           loadError={loadError}
           connected={connected}
-          actions={{ create, update, remove }}
+          actions={{ create, update, remove, reorder }}
           startOpen={params.get('nueva') === '1'}
         />
       </div>

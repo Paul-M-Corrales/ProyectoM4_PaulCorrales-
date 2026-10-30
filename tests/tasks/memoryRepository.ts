@@ -18,7 +18,7 @@ export interface MemoryRepository extends TaskRepository {
   push(tasks: readonly Task[]): void
   fail(message: string): void
   readonly unsubscribed: { count: number }
-  readonly calls: { create: unknown[]; update: unknown[]; remove: string[] }
+  readonly calls: { create: unknown[]; update: unknown[]; remove: string[]; reorder: unknown[] }
 }
 
 /** Repositorio en memoria con el mismo contrato que Firestore, para probar UI y hooks sin red. */
@@ -27,7 +27,7 @@ export function memoryRepository(initial: readonly Task[] = [], result: TaskActi
   const listeners = new Set<(tasks: readonly Task[]) => void>()
   const errors = new Set<(message: string) => void>()
   const unsubscribed = { count: 0 }
-  const calls = { create: [] as unknown[], update: [] as unknown[], remove: [] as string[] }
+  const calls = { create: [] as unknown[], update: [] as unknown[], remove: [] as string[], reorder: [] as unknown[] }
   const emit = () => listeners.forEach((listener) => listener(tasks))
 
   return {
@@ -57,6 +57,11 @@ export function memoryRepository(initial: readonly Task[] = [], result: TaskActi
     update(id, changes) {
       calls.update.push({ id, changes })
       if (result.ok) this.push(tasks.map((item) => (item.id === id ? { ...item, ...changes } : item)))
+      return Promise.resolve(result)
+    },
+    reorder(orders) {
+      calls.reorder.push(orders)
+      if (result.ok) this.push(tasks.map((item) => ({ ...item, order: orders.find((o) => o.id === item.id)?.order ?? item.order })))
       return Promise.resolve(result)
     },
     remove(id) {
