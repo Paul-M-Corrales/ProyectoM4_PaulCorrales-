@@ -21,8 +21,8 @@ describe('rideStateFor', () => {
     expect(high.speed).toBeLessThanOrEqual(MAX_PEDAL_SPEED)
   })
 
-  it('100 %: pedaleo a velocidad máxima (la celebración es un evento, no un estado)', () => {
-    expect(rideStateFor({ total: 4, completed: 4 })).toEqual({ clip: 'ride', speed: MAX_PEDAL_SPEED })
+  it('100 %: reposo (la celebración es un evento, no un estado)', () => {
+    expect(rideStateFor({ total: 4, completed: 4 })).toEqual({ clip: 'ride-idle', speed: 1 })
   })
 
   it('valores inválidos no inventan progreso', () => {

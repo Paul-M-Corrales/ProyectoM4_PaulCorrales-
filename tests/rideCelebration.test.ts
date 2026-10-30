@@ -34,11 +34,10 @@ describe('useRideMascot con progreso real', () => {
     expect(result.current.clip).toBe('ride-mount')
     rerender({ done: 4, total: 4 })
     act(() => result.current.onClipFinished('ride-mount'))
-    expect(result.current.clip).toBe('ride')
-    expect(result.current.speed).toBeGreaterThan(2)
+    expect(result.current.clip).toBe('ride-idle')
   })
 
-  it('celebra exactamente una vez al completar la última tarea y vuelve a un estado estable', () => {
+  it('celebra exactamente una vez al completar la última tarea y después descansa', () => {
     const { result, rerender } = setup({ done: 3 })
     act(() => result.current.onClipFinished('ride-mount'))
     expect(result.current.clip).toBe('ride')
@@ -47,8 +46,17 @@ describe('useRideMascot con progreso real', () => {
     rerender({ done: 4 })
     expect(result.current.clip).toBe('ride-celebrate')
     act(() => result.current.onClipFinished('ride-celebrate'))
-    expect(result.current.clip).toBe('ride')
+    expect(result.current.clip).toBe('ride-idle')
     rerender({ done: 4 })
+    expect(result.current.clip).toBe('ride-idle')
+  })
+
+  it('tras celebrar, una tarea pendiente reanuda el pedaleo y completarla de nuevo celebra', () => {
+    const { result, rerender } = setup({ done: 3 })
+    act(() => result.current.onClipFinished('ride-mount'))
+    rerender({ done: 4 })
+    act(() => result.current.onClipFinished('ride-celebrate'))
+    rerender({ done: 3, total: 5 })
     expect(result.current.clip).toBe('ride')
   })
 
@@ -77,7 +85,7 @@ describe('useRideMascot con progreso real', () => {
     const { result, rerender } = setup({ done: 1, total: 2 })
     act(() => result.current.onClipFinished('ride-mount'))
     rerender({ done: 1, total: 1 })
-    expect(result.current.clip).toBe('ride')
+    expect(result.current.clip).toBe('ride-idle')
   })
 
   it('sin tareas no celebra y al cambiar de usuario se reinicia la celebración en curso', () => {
@@ -93,6 +101,6 @@ describe('useRideMascot con progreso real', () => {
     const { result, rerender } = setup({ done: 3 }, { reducedMotion: true })
     expect(result.current.clip).toBe('ride')
     rerender({ done: 4 })
-    expect(result.current.clip).toBe('ride')
+    expect(result.current.clip).toBe('ride-idle')
   })
 })

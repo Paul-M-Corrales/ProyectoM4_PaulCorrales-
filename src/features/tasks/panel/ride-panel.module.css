@@ -46,6 +46,11 @@
     pointer-events: none;
   }
 
+  /* R3F fija pointer-events:auto inline en su contenedor: sin esto el lienzo tapa los botones de las tareas. */
+  .mascot * {
+    pointer-events: none !important;
+  }
+
   .weekly,
   .streak,
   .quote {
