@@ -1,0 +1,27 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-space-3);
+}
+
+.note,
+.ok,
+.error {
+  margin: 0;
+  flex: 1 1 16rem;
+  font-size: var(--ds-text-sm);
+}
+
+.note {
+  color: var(--ds-muted);
+}
+
+.ok {
+  color: var(--ds-ink-soft);
+}
+
+.error {
+  color: var(--ds-danger);
+  font-weight: var(--ds-weight-bold);
+}

@@ -6,6 +6,7 @@ import { planReorder, type TaskOrder } from '../logic/reorder'
 import type { Task, TaskActionResult, TaskChanges, TaskDraft } from '../types'
 import { FilterTabs } from './FilterTabs'
 import { ListView } from './ListView'
+import { SummaryEmailAction } from './SummaryEmailAction'
 import { SummaryCards } from './SummaryCards'
 import { TaskForm } from './TaskForm'
 import { TasksEmpty } from './TasksEmpty'
@@ -71,6 +72,7 @@ export function TaskManager({ view, status, loadError, connected, actions, start
         <ViewControls sort={view.sort} onSortChange={view.setSort} />
       </div>
       <SummaryCards counts={view.counts} />
+      <SummaryEmailAction />
       <div id="new-task-panel" hidden={!formOpen}>
         {formOpen && <TaskForm key={editing?.id ?? 'new'} initial={editing} onSubmit={submit} onCancel={closeForm} />}
       </div>
