@@ -9,46 +9,58 @@ function fakeIdle(): AnimationClip {
 }
 
 const z = (t: number, bone: string) => welcomePose(t)[bone]?.[2] ?? 0
+const FINGERS = ['Index', 'Middle', 'Ring', 'Pinky'].flatMap((f) => [1, 2, 3].map((k) => `mixamorigRightHand${f}${k}`))
 
-describe('animación welcome (pulgar arriba + puño)', () => {
+describe('animación welcome (pulgar arriba, solo brazo derecho)', () => {
   it('es un clip finito de una sola pasada, sin bicicleta', () => {
     expect(CLIPS.welcome).toMatchObject({ repetitions: 1, bike: false, durationSec: WELCOME_DURATION })
   })
 
-  it('empieza y termina en la pose natural (sin deltas)', () => {
+  it('solo anima huesos del lado derecho (el izquierdo y el resto del cuerpo siguen a idle)', () => {
+    expect(WELCOME_BONES.every((bone) => bone.startsWith('mixamorigRight'))).toBe(true)
+    expect(WELCOME_BONES.some((bone) => /Left|Spine|Neck|Head|Hips|Leg|Foot/.test(bone))).toBe(false)
+    for (let t = 0; t <= WELCOME_DURATION; t += 0.1) {
+      expect(Object.keys(welcomePose(t)).every((bone) => WELCOME_BONES.includes(bone))).toBe(true)
+    }
+  })
+
+  it('empieza y termina en la pose natural (sin deltas) y termina en idle', () => {
     for (const t of [0, WELCOME_DURATION]) {
       for (const delta of Object.values(welcomePose(t))) expect(delta.map((v) => Math.abs(v))).toEqual([0, 0, 0])
     }
   })
 
-  it('1) pulgar arriba con el brazo derecho: codo flexionado, dedos cerrados y pulgar extendido', () => {
-    expect(z(1.6, 'mixamorigRightArm')).toBeGreaterThan(55)
-    expect(z(1.6, 'mixamorigRightForeArm')).toBeGreaterThan(85)
-    expect(z(1.6, 'mixamorigRightHandIndex2')).toBeGreaterThan(75)
-    expect(z(1.6, 'mixamorigRightHandThumb1')).toBeLessThan(-35)
-    expect(Math.abs(z(1.6, 'mixamorigLeftArm'))).toBeLessThan(1)
+  it('el brazo sube gradualmente: antes de 0,4 s sigue en reposo', () => {
+    expect(z(0.3, 'mixamorigRightArm')).toBe(0)
+    expect(z(1.0, 'mixamorigRightArm')).toBeGreaterThan(5)
+    expect(z(1.0, 'mixamorigRightArm')).toBeLessThan(z(1.9, 'mixamorigRightArm'))
   })
 
-  it('el pulgar se mantiene visible un rato antes de pasar al puño', () => {
-    const held = [1.0, 1.4, 1.8, 2.2].every((t) => z(t, 'mixamorigRightHandThumb1') < -30)
-    expect(held).toBe(true)
+  it('pulgar arriba formado: codo flexionado, 4 dedos cerrados y pulgar extendido', () => {
+    expect(z(2.5, 'mixamorigRightArm')).toBeGreaterThan(35)
+    expect(z(2.5, 'mixamorigRightForeArm')).toBeGreaterThan(115)
+    for (const bone of FINGERS) expect(z(2.5, bone)).toBeGreaterThan(80)
+    expect(z(2.5, 'mixamorigRightHandThumb1')).toBeLessThan(-35)
+    expect(z(2.5, 'mixamorigRightHandThumb2')).toBeLessThan(-45)
   })
 
-  it('2) puño con el brazo izquierdo: pulgar remetido y dedos cerrados', () => {
-    expect(z(3.6, 'mixamorigLeftArm')).toBeLessThan(-60)
-    expect(z(3.6, 'mixamorigLeftHandIndex2')).toBeLessThan(-75)
-    expect(z(3.6, 'mixamorigLeftHandThumb1')).toBeLessThan(-30)
-    expect(Math.abs(z(3.6, 'mixamorigRightArm'))).toBeLessThan(1)
+  it('el gesto se sostiene unos 2 s sin cambiar', () => {
+    const held = [2.0, 2.5, 3.0, 3.5, 3.85].map((t) => z(t, 'mixamorigRightForeArm'))
+    expect(Math.max(...held) - Math.min(...held)).toBeLessThan(1)
+    expect(Math.min(...held)).toBeGreaterThan(125)
   })
 
-  it('anatomía: sin codos hiperextendidos ni brazos fuera de rango', () => {
+  it('no hay puño ni movimiento del brazo izquierdo, ni impulsos', () => {
     for (let t = 0; t <= WELCOME_DURATION; t += 0.05) {
-      expect(z(t, 'mixamorigRightForeArm')).toBeGreaterThanOrEqual(-1)
-      expect(z(t, 'mixamorigLeftForeArm')).toBeLessThanOrEqual(1)
-      expect(Math.abs(z(t, 'mixamorigRightArm'))).toBeLessThanOrEqual(75)
-      expect(Math.abs(z(t, 'mixamorigLeftArm'))).toBeLessThanOrEqual(85)
-      expect(Math.abs(z(t, 'mixamorigRightForeArm'))).toBeLessThanOrEqual(110)
-      expect(Math.abs(z(t, 'mixamorigLeftForeArm'))).toBeLessThanOrEqual(115)
+      expect(Object.keys(welcomePose(t)).some((bone) => bone.includes('Left'))).toBe(false)
+    }
+  })
+
+  it('anatomía: codo nunca hiperextendido ni pasado de 135°; brazo ≤ 45°', () => {
+    for (let t = 0; t <= WELCOME_DURATION; t += 0.05) {
+      expect(z(t, 'mixamorigRightForeArm')).toBeGreaterThanOrEqual(0)
+      expect(z(t, 'mixamorigRightForeArm')).toBeLessThanOrEqual(135)
+      expect(z(t, 'mixamorigRightArm')).toBeLessThanOrEqual(45)
     }
   })
 
@@ -59,20 +71,21 @@ describe('animación welcome (pulgar arriba + puño)', () => {
       for (const [bone, delta] of Object.entries(current)) {
         const before = previous[bone] ?? [0, 0, 0]
         for (let axis = 0; axis < 3; axis += 1) {
-          expect(Math.abs((delta[axis] ?? 0) - (before[axis] ?? 0))).toBeLessThan(/Arm$/.test(bone) || /ForeArm$/.test(bone) ? 6 : 7)
+          expect(Math.abs((delta[axis] ?? 0) - (before[axis] ?? 0))).toBeLessThan(/Arm$/.test(bone) ? 6 : 7)
         }
       }
       previous = current
     }
   })
 
-  it('construye un clip sobre huesos reales a 30 fps y no reutiliza point', () => {
+  it('el clip solo contiene rotaciones (sin escalado de manos ni traslaciones)', () => {
     const clip = buildWelcomeClip(fakeIdle())
     expect(clip.name).toBe('welcome')
     expect(clip.duration).toBeCloseTo(WELCOME_DURATION)
-    expect(clip.tracks).toHaveLength(WELCOME_BONES.length + 2)
+    expect(clip.tracks).toHaveLength(WELCOME_BONES.length)
+    expect(clip.tracks.every((t) => t.name.endsWith('.quaternion'))).toBe(true)
+    expect(clip.tracks.some((t) => t.name.endsWith('.scale') || t.name.endsWith('.position'))).toBe(false)
     expect(clip.tracks[0]?.times).toHaveLength(Math.round(WELCOME_DURATION * 30) + 1)
-    expect(clip.tracks.every((t) => t.name.startsWith('mixamorig') && /.(quaternion|scale)$/.test(t.name))).toBe(true)
   })
 
   it('ignora huesos que no existan en idle', () => {

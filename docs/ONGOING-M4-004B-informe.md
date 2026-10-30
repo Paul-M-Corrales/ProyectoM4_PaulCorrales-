@@ -48,3 +48,11 @@ brazo/antebrazo abre y flexiona (espejado en el izquierdo); Z de dedos cierra; Z
 levanta, positivo lo remete. Secuencia (5,6 s): sube el brazo derecho → pulgar arriba sostenido (~1,6 s) →
 baja y sube el puño izquierdo → dos impulsos → reposo. Solo en Inicio; reduced-motion muestra `idle`.
 Limitación: el pulgar del conejo es fino; se refuerza con escala de mano (animada, no destructiva).
+
+## ONGOING-M4-004E (pulgar arriba, solo brazo derecho)
+Referencia: `docs/referencias/Conejo cool con pulgar arriba.png`. `welcome` quedó reducido a una sola acción:
+sube el brazo derecho (arm 38°, codo 128°), cierra los 4 dedos, extiende el pulgar, sostiene ~2 s y vuelve a idle.
+Huesos: `mixamorigRight{Arm,ForeArm,Hand,HandThumb1,HandThumb2}` y `mixamorigRightHand{Index,Middle,Ring,Pinky}1-3`.
+Eliminados: saludo, puño, impulsos, brazo izquierdo, torso/cuello/cabeza y el escalado de manos. El clip solo
+contiene rotaciones. Comparación: `docs/screens/m4-004e-referencia-vs-glb.png`.
+Diferencias con la imagen: el puño del GLB es más delgado y el antebrazo queda algo más abierto hacia fuera.
