@@ -18,8 +18,8 @@ export function TaskCard({ task, onToggle, onEdit, onDelete }: Props) {
       <span
         className={styles.grip}
         role="img"
-        aria-label="Reordenar con arrastrar y soltar (disponible cuando se conecte el guardado)"
-        title="Arrastrar y soltar: disponible con el guardado de tareas"
+        aria-label="Reordenar con arrastrar y soltar: todavía no disponible"
+        title="Arrastrar y soltar: todavía no disponible"
       >
         <Icon name="grip" size={18} />
       </span>

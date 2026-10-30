@@ -1,4 +1,4 @@
-import type { TaskDraft } from '../types'
+import type { TaskChanges, TaskDraft } from '../types'
 
 export const TITLE_MAX = 120
 export const DESCRIPTION_MAX = 500
@@ -16,4 +16,14 @@ export function validateDraft(draft: TaskDraft): DraftErrors {
     errors.dueDate = 'Elegí una fecha válida.'
   }
   return errors
+}
+
+/** Valida solo los campos presentes en una edición parcial (p. ej. marcar como completada). */
+export function validateChanges(changes: TaskChanges): DraftErrors {
+  return validateDraft({
+    title: changes.title ?? 'ok',
+    description: changes.description ?? '',
+    priority: changes.priority ?? 'media',
+    dueDate: changes.dueDate ?? null,
+  })
 }

@@ -20,3 +20,11 @@
   background: var(--ds-danger-soft);
   color: var(--ds-danger);
 }
+
+.notice {
+  margin: 0;
+  padding: var(--ds-space-3) var(--ds-space-4);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-green-soft);
+  color: var(--ds-green);
+}

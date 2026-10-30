@@ -27,11 +27,11 @@ export function progressRatio({ total, completed }: TaskProgress): number {
 }
 
 /**
- * 0 % (o sin tareas): reposo. Parcial: pedaleo cada vez más rápido. 100 %: celebración.
+ * 0 % (o sin tareas): reposo. Parcial: pedaleo cada vez más rápido. 100 %: pedaleo a velocidad máxima;
+ * la celebración (ride-celebrate) es un evento puntual que decide useRideMascot, no un estado.
  */
 export function rideStateFor(progress: TaskProgress): RideState {
   const ratio = progressRatio(progress)
   if (ratio === 0) return { clip: 'ride-idle', speed: 1 }
-  if (ratio === 1) return { clip: 'ride-celebrate', speed: 1 }
   return { clip: 'ride', speed: MIN_PEDAL_SPEED + (MAX_PEDAL_SPEED - MIN_PEDAL_SPEED) * ratio }
 }

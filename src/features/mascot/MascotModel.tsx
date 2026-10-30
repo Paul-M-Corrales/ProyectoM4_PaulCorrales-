@@ -18,6 +18,8 @@ interface Props {
   readonly onReady: () => void
 }
 
+const SPEED_EASING = 4
+
 function configure(action: AnimationAction, clip: ClipName, paused: boolean) {
   const { repetitions } = CLIPS[clip]
   action.reset()
@@ -44,7 +46,6 @@ export function MascotModel({ clip, playId, reducedMotion, speed, getYaw, onClip
 
   useEffect(() => {
     speedRef.current = speed
-    if (actionRef.current) actionRef.current.timeScale = speed
   }, [speed])
 
   useEffect(() => {
@@ -91,6 +92,9 @@ export function MascotModel({ clip, playId, reducedMotion, speed, getYaw, onClip
   }, [animations, mixer, clip, playId, reducedMotion])
 
   useFrame((_, delta) => {
+    const action = actionRef.current
+    // La velocidad converge de forma gradual: sin saltos bruscos al cambiar el progreso.
+    if (action) action.timeScale += (speedRef.current - action.timeScale) * Math.min(1, delta * SPEED_EASING)
     mixer.update(delta)
     // Grupo padre: orienta al conejo sin tocar el GLB ni los ejes de sus clips.
     if (yawRef.current) yawRef.current.rotation.y = getYaw?.() ?? 0

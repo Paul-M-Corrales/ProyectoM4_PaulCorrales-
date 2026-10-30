@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import type { TaskView } from '../hooks/useTaskView'
-import type { Task, TaskActionResult, TaskDraft } from '../types'
+import type { TasksStatus } from '../hooks/useTasks'
+import { useTaskFeedback } from '../hooks/useTaskFeedback'
+import type { Task, TaskActionResult, TaskChanges, TaskDraft } from '../types'
 import { FilterTabs } from './FilterTabs'
 import { SummaryCards } from './SummaryCards'
 import { TaskForm } from './TaskForm'
@@ -13,35 +15,43 @@ import styles from './task-manager.module.css'
 
 interface Actions {
   readonly create: (draft: TaskDraft) => Promise<TaskActionResult>
-  readonly update: (id: string, changes: Partial<TaskDraft & { completed: boolean }>) => Promise<TaskActionResult>
+  readonly update: (id: string, changes: TaskChanges) => Promise<TaskActionResult>
   readonly remove: (id: string) => Promise<TaskActionResult>
 }
 
 interface Props {
   readonly view: TaskView
+  readonly status: TasksStatus
+  readonly loadError?: string | undefined
   readonly connected: boolean
   readonly actions: Actions
   readonly startOpen?: boolean
 }
 
 /** Columna del 70 %: encabezado, buscador, filtros, resumen y listado agrupado. */
-export function TaskManager({ view, connected, actions, startOpen = false }: Props) {
+export function TaskManager({ view, status, loadError, connected, actions, startOpen = false }: Props) {
   const [formOpen, setFormOpen] = useState(startOpen)
   const [editing, setEditing] = useState<Task | undefined>()
-  const [error, setError] = useState<string | undefined>()
+  const { feedback, run, clear } = useTaskFeedback()
 
-  const run = async (action: Promise<TaskActionResult>) => {
-    const result = await action
-    setError(result.ok ? undefined : result.message)
-  }
   const closeForm = () => {
     setFormOpen(false)
     setEditing(undefined)
   }
-  const submit = (draft: TaskDraft) => (editing ? actions.update(editing.id, draft) : actions.create(draft))
+  const submit = async (draft: TaskDraft) => {
+    const result = await (editing ? actions.update(editing.id, draft) : actions.create(draft))
+    if (result.ok) clear()
+    return result
+  }
+  const remove = (task: Task) => {
+    if (window.confirm(`¿Eliminar «${task.title}»? Esta acción no se puede deshacer.`)) {
+      void run(actions.remove(task.id), 'Tarea eliminada.')
+    }
+  }
+  const emptyVariant = status === 'loading' ? 'loading' : view.counts.total === 0 ? 'none' : 'no-results'
 
   return (
-    <section className={styles.manager} aria-labelledby="tasks-title">
+    <section className={styles.manager} aria-labelledby="tasks-title" aria-busy={status === 'loading'}>
       <TasksHeader />
       <TasksToolbar
         query={view.query}
@@ -57,23 +67,21 @@ export function TaskManager({ view, connected, actions, startOpen = false }: Pro
       <div id="new-task-panel" hidden={!formOpen}>
         {formOpen && <TaskForm key={editing?.id ?? 'new'} initial={editing} onSubmit={submit} onCancel={closeForm} />}
       </div>
-      {error && <p className={styles.error} role="alert">{error}</p>}
+      {loadError && <p className={styles.error} role="alert">{loadError}</p>}
+      {feedback?.kind === 'error' && <p className={styles.error} role="alert">{feedback.message}</p>}
+      {feedback?.kind === 'ok' && <p className={styles.notice} role="status">{feedback.message}</p>}
       {view.groups.length > 0 ? (
         <TaskGroups
           groups={view.groups}
-          onToggle={(task) => void run(actions.update(task.id, { completed: !task.completed }))}
+          onToggle={(task) => void run(actions.update(task.id, { completed: !task.completed }), 'Cambios guardados.')}
           onEdit={(task) => {
             setEditing(task)
             setFormOpen(true)
           }}
-          onDelete={(task) => void run(actions.remove(task.id))}
+          onDelete={remove}
         />
       ) : (
-        <TasksEmpty
-          variant={view.counts.total === 0 ? 'none' : 'no-results'}
-          connected={connected}
-          onCreate={() => setFormOpen(true)}
-        />
+        <TasksEmpty variant={emptyVariant} connected={connected} onCreate={() => setFormOpen(true)} />
       )}
     </section>
   )

@@ -102,7 +102,7 @@ describe('Mis tareas', () => {
     expect(screen.getByRole('option', { name: /Tablero/ })).toBeDisabled()
   })
 
-  it('el formulario valida y, sin Firestore, avisa que no se guardó', async () => {
+  it('el formulario valida y, sin Firebase configurado, avisa que no se guardó', async () => {
     const user = userEvent.setup()
     await openPrivate('/tareas')
     await user.click(await screen.findByRole('button', { name: /Nueva tarea/ }))
@@ -110,6 +110,6 @@ describe('Mis tareas', () => {
     expect(await screen.findByText('Escribí un título para la tarea.')).toBeInTheDocument()
     await user.type(screen.getByRole('textbox', { name: /^Título/ }), 'Estudiar')
     await user.click(screen.getByRole('button', { name: 'Guardar tarea' }))
-    expect(await screen.findByText(/todavía no está conectado/)).toBeInTheDocument()
+    expect(await screen.findByText(/falta configurar Firebase o iniciar sesión/)).toBeInTheDocument()
   })
 })

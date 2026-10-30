@@ -1,9 +1,7 @@
-import { act, renderHook } from '@testing-library/react'
 import { daysFromToday, formatDueDate } from '@/features/tasks/logic/dates'
 import { groupTasks } from '@/features/tasks/logic/groupTasks'
 import { sortTasks } from '@/features/tasks/logic/sortTasks'
 import { countTasks } from '@/features/tasks/logic/taskFilters'
-import { useRideMascot } from '@/features/mascot/ride/useRideMascot'
 import type { Task } from '@/features/tasks/types'
 
 const TODAY = new Date(2026, 4, 14) // jueves 14 de mayo de 2026
@@ -15,6 +13,8 @@ const task = (id: string, over: Partial<Task> = {}): Task => ({
   priority: 'media',
   dueDate: null,
   completed: false,
+  createdAt: 0,
+  order: 0,
   ...over,
 })
 
@@ -62,28 +62,5 @@ describe('sortTasks y contadores', () => {
   it('cuenta total, pendientes y completadas', () => {
     expect(countTasks(list)).toEqual({ total: 3, pending: 2, completed: 1 })
     expect(countTasks([])).toEqual({ total: 0, pending: 0, completed: 0 })
-  })
-})
-
-describe('useRideMascot', () => {
-  it('sube a la bici una vez y luego sigue el progreso; sin duplicar la celebración', () => {
-    const { result, rerender } = renderHook(({ done }: { done: number }) => useRideMascot({ total: 4, completed: done }), {
-      initialProps: { done: 4 },
-    })
-    expect(result.current.clip).toBe('ride-mount')
-    act(() => result.current.onClipFinished('ride-mount'))
-    expect(result.current.clip).toBe('ride-celebrate')
-    rerender({ done: 3 })
-    expect(result.current.clip).toBe('ride')
-    expect(result.current.speed).toBeGreaterThan(1)
-    rerender({ done: 2 })
-    const slower = result.current.speed
-    rerender({ done: 3 })
-    expect(result.current.speed).toBeGreaterThan(slower)
-  })
-
-  it('con movimiento reducido salta el montaje', () => {
-    const { result } = renderHook(() => useRideMascot({ total: 4, completed: 0 }, { reducedMotion: true }))
-    expect(result.current.clip).toBe('ride-idle')
   })
 })

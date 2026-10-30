@@ -10,6 +10,8 @@ const task = (over: Partial<Task>): Task => ({
   priority: 'media',
   dueDate: null,
   completed: false,
+  createdAt: 0,
+  order: 0,
   ...over,
 })
 

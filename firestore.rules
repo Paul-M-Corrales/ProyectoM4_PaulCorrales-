@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// On-going: cada usuario solo accede a sus propias tareas en users/{uid}/tasks/{taskId}.
+// Todo lo que no se declara aquí queda denegado por defecto.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Forma exacta de una tarea: ni campos de más ni de menos, con tipos y tamaños acotados.
+    function isValidTask(task) {
+      return task.keys().hasOnly(['title', 'description', 'priority', 'dueDate', 'completed', 'order', 'createdAt', 'updatedAt'])
+        && task.keys().hasAll(['title', 'description', 'priority', 'dueDate', 'completed', 'order', 'createdAt', 'updatedAt'])
+        && task.title is string && task.title.size() > 0 && task.title.size() <= 120
+        && task.description is string && task.description.size() <= 500
+        && task.priority in ['alta', 'media', 'baja']
+        && (task.dueDate == null || (task.dueDate is string && task.dueDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')))
+        && task.completed is bool
+        && task.order is number
+        && task.createdAt is timestamp
+        && task.updatedAt is timestamp && task.updatedAt == request.time;
+    }
+
+    match /users/{uid}/tasks/{taskId} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && isValidTask(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      // La fecha de creación es inmutable; la propiedad la fija la ruta (uid), no un campo editable.
+      allow update: if isOwner(uid)
+        && isValidTask(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isOwner(uid);
+    }
+  }
+}
