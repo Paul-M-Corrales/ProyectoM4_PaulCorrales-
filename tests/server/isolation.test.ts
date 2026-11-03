@@ -49,8 +49,9 @@ describe('aislamiento entre usuarios (A y B)', () => {
     expect(paths).toEqual(['users/uidA/tasks'])
     expect(sent).toHaveLength(1)
     expect(sent[0]?.to).toBe('a@dominio.com')
-    expect(sent[0]?.html + sent[0]?.text).toContain('Tarea de Ana')
-    expect(sent[0]?.html + sent[0]?.text).not.toContain('SECRETO')
+    const content = `${sent[0]?.html}${sent[0]?.text}`
+    expect(content).toContain('Tarea de Ana')
+    expect(content).not.toContain('SECRETO')
   })
 
   it('A no cambia de usuario con uid en query, cabeceras ni cuerpo', async () => {
