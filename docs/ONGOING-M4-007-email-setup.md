@@ -12,13 +12,14 @@ Endpoint: `POST /api/tasks/summary-email` (archivo `api/tasks/summary-email.ts`,
 
 ## Variables (solo servidor, nunca `VITE_`)
 
-`AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `SES_FROM_EMAIL`,
+`AWS_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SES_FROM_EMAIL` (alias con prioridad: `SES_FROM_EMAIL`),
 `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`, opcional `APP_ALLOWED_ORIGINS`.
+`SES_REGION` (opcional) tiene prioridad sobre `AWS_REGION`: Vercel puede fijar `AWS_REGION` en runtime.
 Si faltan las dos claves de AWS se usa la cadena estándar de credenciales del SDK.
 
 ## Pasos manuales en AWS
 
-1. SES → Verified identities: verificar `SES_FROM_EMAIL` (o su dominio) en la región elegida.
+1. SES → Verified identities: verificar `AWS_SES_FROM_EMAIL` (o su dominio) en la región elegida.
 2. Cuenta en *sandbox*: verificar también cada correo destinatario de prueba, o solicitar acceso a producción.
 3. IAM: crear un usuario dedicado (sin permisos de administrador) con una política mínima:
    `ses:SendEmail` sobre el ARN de esa identidad (`arn:aws:ses:<región>:<cuenta>:identity/<identidad>`).

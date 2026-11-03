@@ -1,8 +1,6 @@
 export type Env = Readonly<Record<string, string | undefined>>
 
 const REQUIRED = [
-  'AWS_REGION',
-  'SES_FROM_EMAIL',
   'FIREBASE_PROJECT_ID',
   'FIREBASE_CLIENT_EMAIL',
   'FIREBASE_PRIVATE_KEY',
@@ -22,10 +20,16 @@ export type ConfigResult =
   | { readonly ok: false; readonly missing: readonly string[] }
 
 const value = (env: Env, key: string) => env[key]?.trim() ?? ''
+/** Primer nombre con valor. Vercel fija AWS_REGION en runtime, por eso SES_REGION tiene prioridad. */
+const firstOf = (env: Env, keys: readonly string[]) => keys.map((key) => value(env, key)).find(Boolean) ?? ''
+const REGION_KEYS = ['SES_REGION', 'AWS_REGION'] as const
+const FROM_KEYS = ['SES_FROM_EMAIL', 'AWS_SES_FROM_EMAIL'] as const
 
 /** Lee la configuración del servidor. Devuelve solo los NOMBRES de lo que falta, nunca valores. */
 export function readServerConfig(env: Env): ConfigResult {
   const missing: string[] = REQUIRED.filter((key) => value(env, key) === '')
+  if (firstOf(env, REGION_KEYS) === '') missing.push('AWS_REGION')
+  if (firstOf(env, FROM_KEYS) === '') missing.push('AWS_SES_FROM_EMAIL')
   const keyId = value(env, 'AWS_ACCESS_KEY_ID')
   const secret = value(env, 'AWS_SECRET_ACCESS_KEY')
   if ((keyId === '') !== (secret === '')) missing.push(keyId === '' ? 'AWS_ACCESS_KEY_ID' : 'AWS_SECRET_ACCESS_KEY')
@@ -33,9 +37,9 @@ export function readServerConfig(env: Env): ConfigResult {
   return {
     ok: true,
     config: {
-      awsRegion: value(env, 'AWS_REGION'),
+      awsRegion: firstOf(env, REGION_KEYS),
       awsCredentials: keyId ? { accessKeyId: keyId, secretAccessKey: secret } : null,
-      fromEmail: value(env, 'SES_FROM_EMAIL'),
+      fromEmail: firstOf(env, FROM_KEYS),
       firebase: {
         projectId: value(env, 'FIREBASE_PROJECT_ID'),
         clientEmail: value(env, 'FIREBASE_CLIENT_EMAIL'),

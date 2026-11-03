@@ -64,7 +64,7 @@ describe('configuración del servidor', () => {
   }
 
   it('informa solo los nombres de las variables ausentes', () => {
-    expect(readServerConfig({})).toMatchObject({ ok: false, missing: expect.arrayContaining(['AWS_REGION', 'SES_FROM_EMAIL']) })
+    expect(readServerConfig({})).toMatchObject({ ok: false, missing: expect.arrayContaining(['AWS_REGION', 'AWS_SES_FROM_EMAIL']) })
     expect(readServerConfig({ ...full, AWS_ACCESS_KEY_ID: 'k' })).toMatchObject({ ok: false, missing: ['AWS_SECRET_ACCESS_KEY'] })
   })
 
