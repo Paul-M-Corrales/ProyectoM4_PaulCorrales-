@@ -15,7 +15,8 @@ const load = (name: string) =>
     stdio: ['ignore', 'pipe', 'pipe'],
   })
 
-describe('carga de módulos reales sin require() de ESM (runtime de Vercel)', () => {
+// Cargar firebase-admin tarda ~2 s solo, pero más de 5 s con la suite entera compitiendo por CPU (jsdom).
+describe('carga de módulos reales sin require() de ESM (runtime de Vercel)', { timeout: 30_000 }, () => {
   it.each(MODULES)('%s se puede cargar con require()', (name) => {
     expect(() => load(name)).not.toThrow()
   })
