@@ -1,4 +1,4 @@
-import { closingMessage } from './emailTemplate.js'
+import { closingMessage, summaryNotes } from './emailTemplate.js'
 import { formatDate } from './escapeHtml.js'
 import type { Summary } from './summary.js'
 
@@ -15,8 +15,7 @@ export function renderText(summary: Summary, name: string | null): string {
     `Total: ${summary.total} | Completadas: ${summary.completed} | Pendientes: ${summary.pending} | Progreso: ${summary.percent}%`,
     '',
     ...(lines.length > 0 ? ['Tareas pendientes:', ...lines] : []),
-    ...(summary.hidden > 0 ? [`… y ${summary.hidden} tareas pendientes más (no se muestran en este resumen).`] : []),
-    ...(summary.partial ? ['El resumen considera solo las primeras 500 tareas.'] : []),
+    ...summaryNotes(summary),
     '',
     closingMessage(summary),
   ].join('\n')

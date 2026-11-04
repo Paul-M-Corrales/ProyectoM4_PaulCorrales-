@@ -1,13 +1,13 @@
 import { renderText } from '../../server/emailText'
 import { renderHtml } from '../../server/emailTemplate'
-import { buildSummary } from '../../server/summary'
 import type { SummaryTask } from '../../server/types'
+import { summarize } from './helpers'
 
 const task = (title: string, completed: boolean, over: Partial<SummaryTask> = {}): SummaryTask => ({
   title, completed, priority: 'media', dueDate: null, ...over,
 })
 const render = (tasks: SummaryTask[], name: string | null = 'Ana') => {
-  const summary = buildSummary(tasks)
+  const summary = summarize(tasks)
   return { summary, html: renderHtml(summary, name), text: renderText(summary, name) }
 }
 

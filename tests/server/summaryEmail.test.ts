@@ -4,7 +4,8 @@ import { readServerConfig } from '../../server/env'
 import { escapeHtml, formatDate } from '../../server/escapeHtml'
 import { COOLDOWN_SECONDS, createRateLimiter, DAILY_LIMIT } from '../../server/rateLimit'
 import { createSesSender } from '../../server/ses'
-import { buildSummary, MAX_LISTED } from '../../server/summary'
+import { MAX_LISTED } from '../../server/summary'
+import { summarize } from './helpers'
 import type { SummaryTask } from '../../server/types'
 
 const task = (over: Partial<SummaryTask> = {}): SummaryTask => ({
@@ -13,20 +14,20 @@ const task = (over: Partial<SummaryTask> = {}): SummaryTask => ({
 
 describe('buildSummary', () => {
   it('calcula totales, pendientes y porcentaje', () => {
-    const s = buildSummary([task({ completed: true }), task({ completed: true }), task(), task()])
+    const s = summarize([task({ completed: true }), task({ completed: true }), task(), task()])
     expect(s).toMatchObject({ total: 4, completed: 2, pending: 2, percent: 50, hidden: 0 })
-    expect(buildSummary([])).toMatchObject({ total: 0, percent: 0, listed: [] })
-    expect(buildSummary([task({ completed: true })]).percent).toBe(100)
+    expect(summarize([])).toMatchObject({ total: 0, percent: 0, listed: [] })
+    expect(summarize([task({ completed: true })]).percent).toBe(100)
   })
 
   it('ordena por vencimiento y prioridad, y trunca la lista de forma explícita', () => {
     const many = Array.from({ length: MAX_LISTED + 5 }, (_, i) => task({ title: `t${i}` }))
-    const s = buildSummary(many)
+    const s = summarize(many)
     expect(s.listed).toHaveLength(MAX_LISTED)
     expect(s.hidden).toBe(5)
-    expect(renderHtml(s, null)).toContain('5 tareas pendientes más')
-    expect(renderText(s, null)).toContain('5 tareas pendientes más')
-    const [first] = buildSummary([task({ title: 'sin' }), task({ title: 'cerca', dueDate: '2030-01-01' })]).listed
+    expect(renderHtml(s, null)).toContain('Mostrando 25 de 30 pendientes')
+    expect(renderText(s, null)).toContain('5 no están incluidas')
+    const [first] = summarize([task({ title: 'sin' }), task({ title: 'cerca', dueDate: '2030-01-01' })]).listed
     expect(first?.title).toBe('cerca')
   })
 })
@@ -34,7 +35,7 @@ describe('buildSummary', () => {
 describe('plantilla', () => {
   it('escapa el HTML de tareas y del nombre (sin inyección)', () => {
     const evil = '<script>alert(1)</script><img src=x onerror=1>"\''
-    const html = renderHtml(buildSummary([task({ title: evil })]), evil)
+    const html = renderHtml(summarize([task({ title: evil })]), evil)
     expect(html).not.toContain('<script>')
     expect(html).not.toContain('<img')
     expect(html).toContain('&lt;script&gt;')
@@ -42,7 +43,7 @@ describe('plantilla', () => {
   })
 
   it('incluye progreso, prioridades, fechas y mensaje de cierre, en HTML y texto', () => {
-    const s = buildSummary([task({ title: 'Leer', priority: 'alta', dueDate: '2030-05-14' }), task({ completed: true })])
+    const s = summarize([task({ title: 'Leer', priority: 'alta', dueDate: '2030-05-14' }), task({ completed: true })])
     const html = renderHtml(s, 'Ana')
     const text = renderText(s, 'Ana')
     for (const out of [html, text]) {

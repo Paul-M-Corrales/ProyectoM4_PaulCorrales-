@@ -16,6 +16,15 @@ export interface VerifiedToken {
   readonly name: string | null
 }
 
+/** Contadores globales exactos + candidatas pendientes (acotadas) para la lista del correo. */
+export interface TasksSnapshot {
+  readonly total: number
+  readonly completed: number
+  readonly pending: number
+  readonly unknown: number
+  readonly candidates: readonly SummaryTask[]
+}
+
 export interface OutgoingEmail {
   readonly to: string
   readonly subject: string
@@ -34,7 +43,7 @@ export type Reservation =
 
 export interface Deps {
   verifyToken(token: string): Promise<VerifiedToken>
-  loadTasks(uid: string): Promise<{ readonly tasks: readonly SummaryTask[]; readonly partial: boolean }>
+  loadTasks(uid: string): Promise<TasksSnapshot>
   /** Reserva atómica y persistente del envío (frecuencia por usuario). */
   reserveSend(uid: string): Promise<Reservation>
   readonly sender: EmailSender

@@ -39,13 +39,29 @@ export function closingMessage(summary: Summary): string {
   return 'Paso a paso se llega lejos. ¡Seguí así!'
 }
 
+const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`
+
+/** Avisos comunes al HTML y al texto: la lista es una muestra y los datos antiguos se declaran, no se ocultan. */
+export function summaryNotes(summary: Summary): string[] {
+  const notes: string[] = []
+  if (summary.hidden > 0) {
+    notes.push(
+      `Mostrando ${summary.listed.length} de ${summary.pending} pendientes: ${plural(summary.hidden, 'no está incluida', 'no están incluidas')} ` +
+        'en esta lista. Abrí On-going para verlas todas.',
+    )
+  }
+  if (summary.unknown > 0) {
+    notes.push(`${plural(summary.unknown, 'tarea no tiene', 'tareas no tienen')} un estado válido y no se cuenta como completada ni pendiente.`)
+  }
+  return notes
+}
+
 export function renderHtml(summary: Summary, name: string | null): string {
   const list =
     summary.listed.length > 0
       ? `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">${summary.listed.map(row).join('')}</table>`
       : ''
-  const more = summary.hidden > 0 ? note(`… y ${summary.hidden} tareas pendientes más (no se muestran en este resumen).`) : ''
-  const partial = summary.partial ? note('El resumen considera solo las primeras 500 tareas.') : ''
+  const notes = summaryNotes(summary).map(note).join('')
   return (
     '<!doctype html><html lang="es"><body style="margin:0;background:#f6f6f9;padding:24px 12px">' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">' +
@@ -59,7 +75,7 @@ export function renderHtml(summary: Summary, name: string | null): string {
     `${stat(String(summary.pending), 'Pendientes', '#fff4c7')}${stat(`${summary.percent}%`, 'Progreso', '#ffdcec')}` +
     '</tr></table></td></tr>' +
     `<tr><td style="${FONT}padding-top:20px"><h2 style="font-size:17px;margin:0 0 4px;color:#0c0c10">Tareas pendientes</h2>` +
-    `${list}${more}${partial}` +
+    `${list}${notes}` +
     `<p style="font-size:15px;color:#0c0c10;margin:24px 0 0;font-weight:700">${escapeHtml(closingMessage(summary))}</p>` +
     '</td></tr></table></td></tr></table></body></html>'
   )

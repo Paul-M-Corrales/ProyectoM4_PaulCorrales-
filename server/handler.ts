@@ -78,8 +78,7 @@ export function createSummaryEmailHandler(getDeps: () => DepsResult) {
       if (!reservation.allowed) {
         return fail('rate_limited', { 'Retry-After': String(reservation.retryAfterSeconds) })
       }
-      const { tasks, partial } = await deps.loadTasks(user.uid)
-      const summary = buildSummary(tasks, partial)
+      const summary = buildSummary(await deps.loadTasks(user.uid))
       try {
         await deps.sender.send({
           to: user.email,
