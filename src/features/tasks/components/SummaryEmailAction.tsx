@@ -1,10 +1,10 @@
-import { useContext } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import { Button } from '@/components/ui/Button'
 import { SummaryEmailContext } from '../context/summaryEmailContext'
 import { useSummaryEmail } from '../hooks/useSummaryEmail'
+import { VerifyEmailNotice } from './VerifyEmailNotice'
 import styles from './summary-email-action.module.css'
 
-const UNVERIFIED = 'Para recibir el resumen necesitás una cuenta con el correo verificado.'
 const ACCEPTED =
   'Solicitud aceptada: el resumen se envió a tu correo. Puede tardar unos minutos y no garantizamos que llegue a la bandeja de entrada; revisá también spam.'
 
@@ -12,7 +12,9 @@ const ACCEPTED =
 export function SummaryEmailAction() {
   const service = useContext(SummaryEmailContext)
   const { state, send } = useSummaryEmail(service)
-  const unverified = service.isEmailVerified() === false
+  const [verified, setVerified] = useState(() => service.isEmailVerified())
+  const markVerified = useCallback(() => setVerified(true), [])
+  const unverified = verified === false
   const sending = state.kind === 'sending'
 
   return (
@@ -26,7 +28,7 @@ export function SummaryEmailAction() {
       >
         {sending ? 'Enviando…' : 'Enviar resumen por correo'}
       </Button>
-      {unverified && <p className={styles.note} role="status">{UNVERIFIED}</p>}
+      {unverified && <VerifyEmailNotice onVerified={markVerified} />}
       {state.kind === 'accepted' && <p className={styles.ok} role="status">{ACCEPTED}</p>}
       {state.kind === 'error' && <p className={styles.error} role="alert">{state.message}</p>}
     </div>
