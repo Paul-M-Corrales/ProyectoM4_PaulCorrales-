@@ -67,6 +67,14 @@ Si faltan las dos claves de AWS se usa la cadena estándar de credenciales del S
 - Alternativa fiel a producción: `npx vercel dev` (requiere cuenta y `vercel link`).
 - Los tests (`npm test`, `npm run test:rules`) usan dobles de AWS y Firebase Admin o el emulador; no envían correos reales.
 
+## Dependencia fijada: `jose` bajo `jwks-rsa`
+
+`firebase-admin@14.5.0` -> `jwks-rsa@4.1.0` -> `jose@6` (solo ESM). El runtime de Vercel no admite `require()` de módulos ESM
+y la función caía con `ERR_REQUIRE_ESM`. `package.json` fija `overrides: { "jwks-rsa": { "jose": "^5.10.0" } }` (jose 5 es CJS+ESM
+y `jwks-rsa` solo usa `importJWK` y `exportSPKI`). Afecta únicamente a ese árbol; el `jose@6` de `firebase-tools` (dev) no cambia.
+`tests/server/realModules.test.ts` carga los módulos reales con `--no-experimental-require-module`. Retirar el override cuando
+`jwks-rsa`/`firebase-admin` publiquen una versión CommonJS-compatible, y revisar el log de `npm audit` al actualizar.
+
 ## Limitaciones conocidas
 
 - `verifyIdToken` no usa `checkRevoked`: un token revocado sigue siendo válido hasta que expire (máx. 1 hora).
