@@ -1,5 +1,6 @@
 import { renderText } from './emailText.js'
 import { renderHtml, SUBJECT } from './emailTemplate.js'
+import { describeSesError } from './sesDiagnostics.js'
 import { buildSummary } from './summary.js'
 import type { DepsResult } from './deps.js'
 import type { Deps, ErrorCode, VerifiedToken } from './types.js'
@@ -89,7 +90,7 @@ export function createSummaryEmailHandler(getDeps: () => DepsResult) {
           text: renderText(summary, user.name),
         })
       } catch (error) {
-        logError('ses', error)
+        console.error(`[summary-email] ses: ${describeSesError(error, user.email)}`)
         return fail('send_failed')
       }
       return json(202, { ok: true, status: 'accepted' })
