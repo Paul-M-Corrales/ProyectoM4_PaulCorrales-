@@ -43,7 +43,9 @@ const logError = (stage: string, error: unknown) =>
 async function authenticate(deps: Deps, token: string): Promise<VerifiedToken | null> {
   try {
     return await deps.verifyToken(token)
-  } catch {
+  } catch (error) {
+    // Distingue en los logs un token vencido de una credencial de Admin mal configurada (solo el tipo de error).
+    logError('auth', error)
     return null
   }
 }
