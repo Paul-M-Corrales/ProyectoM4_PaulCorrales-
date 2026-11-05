@@ -1,0 +1,70 @@
+/* Tarjeta en el flujo normal de la página (no flotante): nunca queda debajo de la mascota ni de adornos. */
+.card {
+  display: grid;
+  gap: var(--ds-space-3);
+  padding: var(--ds-space-5);
+  border: 2px solid var(--ds-yellow);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-yellow-soft);
+  color: var(--ds-ink);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--ds-text-xl);
+}
+
+.email,
+.text,
+.status p,
+.error {
+  margin: 0;
+  font-size: var(--ds-text-md);
+  overflow-wrap: anywhere;
+}
+
+.text,
+.status {
+  color: var(--ds-ink-soft);
+}
+
+.status {
+  display: grid;
+  gap: var(--ds-space-1);
+}
+
+.status:empty {
+  display: none;
+}
+
+.hint {
+  font-size: var(--ds-text-sm);
+}
+
+.error {
+  padding: var(--ds-space-3) var(--ds-space-4);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-danger-soft);
+  color: var(--ds-danger);
+  font-weight: var(--ds-weight-bold);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-3);
+}
+
+/* En móvil los botones ocupan todo el ancho y se apilan: fáciles de tocar. */
+@media (max-width: 30rem) {
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+/* El botón de reenvío se deshabilita durante la cuenta atrás: debe seguir pudiéndose leer cuántos segundos faltan. */
+.actions > :first-child:disabled {
+  opacity: 1;
+  color: var(--ds-ink-soft);
+  border-color: #b8a24a;
+}

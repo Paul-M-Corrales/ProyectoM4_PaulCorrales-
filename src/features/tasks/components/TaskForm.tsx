@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/Button'
+import { todayLocal } from '../logic/localDate'
 import { validateDraft, DESCRIPTION_MAX, TITLE_MAX, type DraftErrors } from '../logic/validateDraft'
 import { PRIORITIES, type Priority, type Task, type TaskActionResult, type TaskDraft } from '../types'
 import styles from './task-form.module.css'
@@ -22,11 +23,17 @@ export function TaskForm({ initial, onSubmit, onCancel }: Props) {
   const [failure, setFailure] = useState<string | undefined>()
   const [pending, setPending] = useState(false)
 
+  // Una tarea ya vencida conserva su fecha original como mínimo válido; las nuevas no admiten días pasados.
+  const original = initial?.dueDate ?? null
+  const today = todayLocal()
+  const minDate = original !== null && original < today ? original : today
+
   const submit = async (event: FormEvent) => {
     event.preventDefault()
     if (pending) return
     const draft: TaskDraft = { title: title.trim(), description: description.trim(), priority, dueDate: dueDate || null }
-    const found = validateDraft(draft)
+    // Al guardar se recalcula «hoy»: el formulario puede haber quedado abierto pasada la medianoche.
+    const found = validateDraft(draft, { today: todayLocal(), original: initial?.dueDate ?? null })
     setErrors(found)
     setFailure(undefined)
     if (Object.keys(found).length > 0) return
@@ -70,7 +77,14 @@ export function TaskForm({ initial, onSubmit, onCancel }: Props) {
         </label>
         <label className={styles.field}>
           Fecha límite
-          <input type="date" value={dueDate} onChange={(event) => setDueDate(event.target.value)} />
+          <input
+            type="date"
+            value={dueDate}
+            min={minDate}
+            aria-invalid={errors.dueDate ? true : undefined}
+            onChange={(event) => setDueDate(event.target.value)}
+          />
+          {errors.dueDate && <span className={styles.error} role="alert">{errors.dueDate}</span>}
         </label>
       </div>
       {failure && <p className={styles.notice} role="alert">{failure}</p>}

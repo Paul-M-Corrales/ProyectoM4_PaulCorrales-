@@ -14,6 +14,8 @@ export type VerificationRefresh =
 export interface EmailVerificationService {
   /** true / false según la sesión actual; null si no hay sesión o Firebase no está configurado. */
   isVerified(): boolean | null
+  /** Correo de la cuenta actual (para mostrárselo al usuario); null si no hay sesión. */
+  email(): string | null
   /** Pide a Firebase que envíe el correo de verificación al usuario actual. */
   send(): Promise<VerificationSend>
   /** Recarga al usuario y, si ya verificó, renueva el ID token: el backend lee email_verified del token. */
@@ -42,6 +44,7 @@ export function createEmailVerificationService(env: Env = import.meta.env): Emai
   const user = () => (config.ok ? getFirebaseAuth(config.config).currentUser : null)
   return {
     isVerified: () => user()?.emailVerified ?? null,
+    email: () => user()?.email ?? null,
     async send() {
       const current = user()
       if (!current) return { ok: false, message: NO_SESSION }

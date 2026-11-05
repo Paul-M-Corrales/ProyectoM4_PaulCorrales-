@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import { EmailGateContext } from '../context/emailGateContext'
 import type { TaskView } from '../hooks/useTaskView'
 import type { TasksStatus } from '../hooks/useTasks'
 import { useTaskFeedback } from '../hooks/useTaskFeedback'
@@ -36,6 +37,7 @@ export function TaskManager({ view, status, loadError, connected, actions, start
   const [formOpen, setFormOpen] = useState(startOpen)
   const [editing, setEditing] = useState<Task | undefined>()
   const { feedback, run, clear } = useTaskFeedback()
+  const gate = useContext(EmailGateContext)
 
   const closeForm = () => {
     setFormOpen(false)
@@ -72,7 +74,7 @@ export function TaskManager({ view, status, loadError, connected, actions, start
         <ViewControls sort={view.sort} onSortChange={view.setSort} />
       </div>
       <SummaryCards counts={view.counts} />
-      <SummaryEmailAction />
+      <SummaryEmailAction locked={gate.unverified} />
       <div id="new-task-panel" hidden={!formOpen}>
         {formOpen && <TaskForm key={editing?.id ?? 'new'} initial={editing} onSubmit={submit} onCancel={closeForm} />}
       </div>

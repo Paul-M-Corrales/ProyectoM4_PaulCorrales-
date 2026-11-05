@@ -1,88 +1,91 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { SummaryEmailAction } from '@/features/tasks/components/SummaryEmailAction'
+import { VerifyEmailNotice } from '@/features/tasks/components/VerifyEmailNotice'
 import { EmailVerificationContext } from '@/features/tasks/context/emailVerificationContext'
-import { SummaryEmailContext } from '@/features/tasks/context/summaryEmailContext'
 import type { EmailVerificationService } from '@/features/tasks/services/emailVerificationService'
-import type { SummaryEmailService } from '@/features/tasks/services/summaryEmailService'
+import { EMAIL, fakeVerification } from './tasks/fakeVerification'
 
-function open(verification: Partial<EmailVerificationService>) {
-  const summary: SummaryEmailService = { isEmailVerified: () => false, send: vi.fn(() => Promise.resolve({ ok: true as const })) }
-  const service: EmailVerificationService = {
-    isVerified: () => false,
-    send: vi.fn(() => Promise.resolve({ ok: true as const })),
-    refresh: vi.fn(() => Promise.resolve({ ok: true as const, verified: false })),
-    ...verification,
-  }
-  render(
-    <SummaryEmailContext value={summary}>
-      <EmailVerificationContext value={service}>
-        <SummaryEmailAction />
-      </EmailVerificationContext>
-    </SummaryEmailContext>,
+function open(over: Partial<EmailVerificationService> = {}, onVerified = vi.fn()) {
+  const service = fakeVerification(over)
+  const view = render(
+    <EmailVerificationContext value={service}>
+      <VerifyEmailNotice onVerified={onVerified} />
+    </EmailVerificationContext>,
   )
-  return service
+  return { service, onVerified, view }
 }
-const summaryButton = () => screen.getByRole('button', { name: 'Enviar resumen por correo' })
+const resend = () => screen.getByRole('button', { name: /^Reenviar correo|^Enviando/ })
 
-describe('verificación de correo con Firebase Authentication', () => {
-  it('con el correo sin verificar explica los pasos y mantiene deshabilitado el resumen', () => {
-    open({})
-    expect(summaryButton()).toBeDisabled()
-    expect(screen.getByText(/Pedí el correo de verificación/)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Enviar correo de verificación' })).toBeEnabled()
-  })
+beforeEach(() => sessionStorage.clear())
 
-  it('envía el correo una sola vez aunque se haga doble clic y bloquea el reenvío con cuenta atrás', async () => {
-    const user = userEvent.setup()
-    const service = open({})
-    const send = screen.getByRole('button', { name: 'Enviar correo de verificación' })
-    await user.dblClick(send)
+describe('aviso «Verificá tu correo electrónico»', () => {
+  it('muestra título, correo, el envío automático, Spam y que puede tardar', async () => {
+    const { service } = open()
+    expect(screen.getByRole('heading', { name: 'Verificá tu correo electrónico' })).toBeInTheDocument()
+    expect(screen.getByText(EMAIL)).toBeInTheDocument()
+    expect(screen.getByText(/antes de acceder a las funciones que requieren verificación/)).toBeInTheDocument()
+    const status = await screen.findByText(/Te enviamos un enlace de verificación/)
+    expect(status).toHaveTextContent(/bandeja de entrada y también las carpetas de Spam o Correo no deseado/)
+    expect(screen.getByText(/Puede tardar unos minutos/)).toBeInTheDocument()
     expect(service.send).toHaveBeenCalledTimes(1)
-    expect(await screen.findByText(/Te enviamos un correo de verificación/)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Reenviar en \d+ s/ })).toBeDisabled()
   })
 
-  it('muestra el estado de carga mientras se envía', async () => {
-    const user = userEvent.setup()
-    let finish: (value: { ok: true }) => void = () => {}
-    open({ send: vi.fn(() => new Promise<{ ok: true }>((resolve) => (finish = resolve))) })
-    await user.click(screen.getByRole('button', { name: 'Enviar correo de verificación' }))
-    expect(screen.getByRole('button', { name: 'Enviando…' })).toBeDisabled()
-    finish({ ok: true })
+  it('no vuelve a enviar solo al recargar la página en la misma sesión', async () => {
+    const first = open()
     await screen.findByText(/Te enviamos/)
+    first.view.unmount()
+    const second = open()
+    expect(screen.getByText(/Te enviamos un enlace/)).toBeInTheDocument()
+    expect(second.service.send).not.toHaveBeenCalled()
   })
 
-  it('muestra el error de Firebase sin habilitar el resumen ni la cuenta atrás', async () => {
-    const user = userEvent.setup()
-    open({ send: vi.fn(() => Promise.resolve({ ok: false as const, message: 'Pediste demasiados correos.' })) })
-    await user.click(screen.getByRole('button', { name: 'Enviar correo de verificación' }))
+  it('muestra la carga y no afirma haber enviado nada si Firebase devuelve un error', async () => {
+    let fail: (value: { ok: false; message: string }) => void = () => {}
+    open({ send: vi.fn(() => new Promise<{ ok: false; message: string }>((resolve) => (fail = resolve))) })
+    expect(screen.getByText('Enviando el enlace de verificación…')).toBeInTheDocument()
+    expect(resend()).toBeDisabled()
+    fail({ ok: false, message: 'Pediste demasiados correos.' })
     expect(await screen.findByRole('alert')).toHaveTextContent('Pediste demasiados correos.')
-    expect(screen.getByRole('button', { name: 'Enviar correo de verificación' })).toBeEnabled()
-    expect(summaryButton()).toBeDisabled()
+    expect(screen.queryByText(/Te enviamos/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Spam/)).not.toBeInTheDocument()
+    expect(resend()).toBeEnabled()
   })
 
-  it('si aún no verificó lo indica y sigue deshabilitado', async () => {
+  it('reenvía una sola vez aunque se haga doble clic y luego bloquea con cuenta atrás', async () => {
     const user = userEvent.setup()
-    open({})
-    await user.click(screen.getByRole('button', { name: 'Ya verifiqué mi correo' }))
+    const send = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, message: 'Sin red.' })
+      .mockResolvedValue({ ok: true })
+    open({ send })
+    await screen.findByRole('alert')
+    await user.dblClick(resend())
+    expect(send).toHaveBeenCalledTimes(2)
+    expect(await screen.findByText(/Te enviamos un enlace/)).toBeInTheDocument()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Reenviar correo \(\d+ s\)/ })).toBeDisabled()
+  })
+
+  it('«Ya verifiqué mi correo»: pendiente, error y confirmación', async () => {
+    const user = userEvent.setup()
+    const refresh = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: true, verified: false })
+      .mockResolvedValueOnce({ ok: false, message: 'No hay conexión.' })
+      .mockResolvedValueOnce({ ok: true, verified: true })
+    const { onVerified } = open({ refresh })
+    const check = () => screen.getByRole('button', { name: 'Ya verifiqué mi correo' })
+    await user.click(check())
     expect(await screen.findByText(/Todavía no figura como verificado/)).toBeInTheDocument()
-    expect(summaryButton()).toBeDisabled()
-  })
-
-  it('al verificar, habilita el botón del resumen y retira el aviso', async () => {
-    const user = userEvent.setup()
-    const service = open({ refresh: vi.fn(() => Promise.resolve({ ok: true as const, verified: true })) })
-    await user.click(screen.getByRole('button', { name: 'Ya verifiqué mi correo' }))
-    await waitFor(() => expect(summaryButton()).toBeEnabled())
-    expect(service.refresh).toHaveBeenCalledTimes(1)
-    expect(screen.queryByText(/Pedí el correo de verificación/)).not.toBeInTheDocument()
-  })
-
-  it('muestra el error al comprobar la verificación', async () => {
-    const user = userEvent.setup()
-    open({ refresh: vi.fn(() => Promise.resolve({ ok: false as const, message: 'No hay conexión.' })) })
-    await user.click(screen.getByRole('button', { name: 'Ya verifiqué mi correo' }))
+    await user.click(check())
     expect(await screen.findByRole('alert')).toHaveTextContent('No hay conexión.')
+    await user.click(check())
+    await waitFor(() => expect(onVerified).toHaveBeenCalledTimes(1))
+  })
+
+  it('sin sesión no intenta enviar nada', () => {
+    const { service } = open({ email: () => null })
+    expect(service.send).not.toHaveBeenCalled()
+    expect(screen.queryByText(/Cuenta:/)).not.toBeInTheDocument()
   })
 })

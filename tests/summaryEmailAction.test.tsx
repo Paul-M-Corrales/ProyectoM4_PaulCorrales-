@@ -6,10 +6,10 @@ import { SummaryEmailAction } from '@/features/tasks/components/SummaryEmailActi
 import { SummaryEmailContext } from '@/features/tasks/context/summaryEmailContext'
 import { createSummaryEmailService, type SummaryEmailService } from '@/features/tasks/services/summaryEmailService'
 
-const open = (service: SummaryEmailService) =>
+const open = (service: SummaryEmailService, locked = false) =>
   render(
     <SummaryEmailContext value={service}>
-      <SummaryEmailAction />
+      <SummaryEmailAction locked={locked} />
     </SummaryEmailContext>,
   )
 const button = () => screen.getByRole('button', { name: /resumen por correo|Enviando/ })
@@ -43,11 +43,14 @@ describe('Enviar resumen por correo', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Esperá un momento.')
   })
 
-  it('con el correo sin verificar queda deshabilitado y lo explica', () => {
+  it('bloqueado por falta de verificación queda deshabilitado y remite al aviso', async () => {
+    const user = userEvent.setup()
     const send = vi.fn()
-    open({ isEmailVerified: () => false, send })
+    open({ isEmailVerified: () => false, send }, true)
     expect(button()).toBeDisabled()
-    expect(screen.getByRole('status')).toHaveTextContent(/correo verificado/)
+    expect(screen.getByText(/Verificá tu correo/)).toBeInTheDocument()
+    await user.click(button())
+    expect(send).not.toHaveBeenCalled()
   })
 })
 

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { EmailVerificationService } from '../services/emailVerificationService'
+import { markVerificationSent, wasVerificationSent } from '../services/verificationSession'
 
 /** Espera mínima entre reenvíos desde la interfaz (Firebase aplica además su propio límite). */
 export const RESEND_COOLDOWN_SECONDS = 60
@@ -14,7 +15,10 @@ export type VerificationState =
 
 /** Envío y comprobación de la verificación, con cerrojo anti doble clic y cuenta atrás para reenviar. */
 export function useEmailVerification(service: EmailVerificationService, onVerified: () => void) {
-  const [state, setState] = useState<VerificationState>({ kind: 'idle' })
+  // Si el enlace ya se envió en esta sesión (p. ej. al registrarse) no se vuelve a enviar solo al recargar.
+  const [state, setState] = useState<VerificationState>(() =>
+    wasVerificationSent(service.email()) ? { kind: 'sent' } : { kind: 'idle' },
+  )
   const [until, setUntil] = useState(0)
   const [now, setNow] = useState(() => Date.now())
   const busy = useRef(false)
@@ -46,12 +50,19 @@ export function useEmailVerification(service: EmailVerificationService, onVerifi
       run({ kind: 'sending' }, async () => {
         const result = await service.send()
         if (!result.ok) return { kind: 'error', message: result.message }
+        markVerificationSent(service.email())
         setNow(Date.now())
         setUntil(Date.now() + RESEND_COOLDOWN_SECONDS * 1000)
         return { kind: 'sent' }
       }),
     [run, service],
   )
+
+  // Primer envío automático: solo con sesión y si todavía no se envió en esta sesión del navegador.
+  useEffect(() => {
+    const email = service.email()
+    if (email !== null && !wasVerificationSent(email)) void send()
+  }, [service, send])
 
   const check = useCallback(
     () =>

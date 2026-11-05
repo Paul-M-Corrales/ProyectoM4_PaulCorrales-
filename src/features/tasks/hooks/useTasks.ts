@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { TaskRepository } from '../services/taskRepository'
-import type { Task } from '../types'
+import { pastDueError } from '../logic/localDate'
+import type { Task, TaskActionResult } from '../types'
 
 const EMPTY: readonly Task[] = []
+const reject = (message: string): Promise<TaskActionResult> => Promise.resolve({ ok: false, message })
 
 export type TasksStatus = 'loading' | 'ready' | 'error'
 
@@ -34,8 +36,16 @@ export function useTasks(repository: TaskRepository) {
       status: own ? state.status : ('loading' as TasksStatus),
       loadError: own ? state.error : undefined,
       connected: repository.connected,
-      create: (draft: Parameters<TaskRepository['create']>[0]) => repository.create(draft),
-      update: (id: string, changes: Parameters<TaskRepository['update']>[1]) => repository.update(id, changes),
+      // Última barrera contra fechas pasadas, aunque se eluda el formulario. Conservar la fecha vencida original sí se permite.
+      create: (draft: Parameters<TaskRepository['create']>[0]) => {
+        const past = pastDueError(draft.dueDate)
+        return past ? reject(past) : repository.create(draft)
+      },
+      update: (id: string, changes: Parameters<TaskRepository['update']>[1]) => {
+        const original = (own ? state.tasks : EMPTY).find((task) => task.id === id)?.dueDate ?? null
+        const past = changes.dueDate === undefined ? undefined : pastDueError(changes.dueDate, original)
+        return past ? reject(past) : repository.update(id, changes)
+      },
       remove: (id: string) => repository.remove(id),
       reorder: (orders: Parameters<TaskRepository['reorder']>[0]) => repository.reorder(orders),
     }

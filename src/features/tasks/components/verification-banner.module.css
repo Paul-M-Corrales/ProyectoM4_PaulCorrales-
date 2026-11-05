@@ -1,0 +1,18 @@
+.banner {
+  padding: var(--ds-space-5) var(--ds-gutter) 0;
+}
+
+@media (min-width: 1024px) {
+  .banner {
+    padding-top: var(--ds-space-6);
+  }
+}
+
+.done {
+  margin: 0;
+  padding: var(--ds-space-3) var(--ds-space-4);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-green-soft);
+  color: #0d6b3a;
+  font-weight: var(--ds-weight-bold);
+}
