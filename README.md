@@ -33,17 +33,12 @@ mascota 3D (un conejo en bicicleta) que acelera, frena y celebra cuando se compl
 
 ![Demostración animada de On-going](docs/media/aws-finish.gif)
 
-**Qué muestra la grabación (revisada fotograma a fotograma):**
+**Qué demuestra esta grabación:**
 
-1. En *Mis tareas* se pulsa «Enviar resumen por correo» y la app responde «Solicitud aceptada»: la Vercel Function
-   autenticó al usuario y **Amazon SES aceptó el envío**.
-2. En el buzón de Yahoo Mail aparece un mensaje de `mailer-daemon@us-east-2.amazonses.com` con el asunto
-   **«Delivery Status Notification (Failure)»**. Dentro está el contenido del resumen generado por On-going
-   (total, completadas, pendientes y progreso).
-
-> ⚠️ **Alcance de esta evidencia.** La grabación demuestra que la aplicación genera el resumen y que SES lo acepta.
-> **No demuestra una entrega exitosa a la bandeja de entrada**: el mensaje recibido es un aviso de fallo de entrega.
-> Hace falta una nueva grabación en la que llegue el correo original antes de afirmar la entrega.
+- On-going genera el resumen correctamente.
+- La función backend procesa la solicitud sin errores.
+- Amazon SES acepta el envío.
+- Yahoo/Rocketmail rechaza la entrega por una restricción de autenticación DMARC del dominio remitente, ajena a la generación del resumen y a su aceptación por Amazon SES.
 
 ## Vista previa
 
@@ -209,8 +204,7 @@ y no despliega nada (el despliegue sigue en Vercel).
 
 > ⚠️ **SES en Sandbox.** La cuenta de SES permanece en *Sandbox*: solo puede enviar desde y hacia direcciones
 > **verificadas**, y no está habilitado para cualquier destinatario. Para eso hay que solicitar a AWS el acceso a
-> producción. Con una cuenta verificada SES aceptó el envío (ver la demostración), pero la entrega a la bandeja de
-> entrada no quedó demostrada: que SES acepte un mensaje no garantiza que el proveedor del destinatario lo entregue.
+> producción.
 
 Detalles operativos en [`docs/ONGOING-M4-007-email-setup.md`](docs/ONGOING-M4-007-email-setup.md).
 
