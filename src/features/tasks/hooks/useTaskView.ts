@@ -5,10 +5,10 @@ import { countTasks, filterTasks, progressOf } from '../logic/taskFilters'
 import type { Task, TaskFilter } from '../types'
 
 /** Estado de la vista (búsqueda, filtro, orden) y los derivados que dependen de él. */
-export function useTaskView(tasks: readonly Task[]) {
+export function useTaskView(tasks: readonly Task[], initialSort: SortKey = 'due') {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<TaskFilter>('all')
-  const [sort, setSort] = useState<SortKey>('due')
+  const [sort, setSort] = useState<SortKey>(initialSort)
 
   const visible = useMemo(
     () => sortTasks(filterTasks(tasks, filter, query), sort),

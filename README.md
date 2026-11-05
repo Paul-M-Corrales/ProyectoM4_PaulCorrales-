@@ -29,9 +29,21 @@ mascota 3D (un conejo en bicicleta) que acelera, frena y celebra cuando se compl
 **Aplicación en vivo:** <https://on-going.vercel.app>  
 **Repositorio:** <https://github.com/Paul-M-Corrales/ProyectoM4_PaulCorrales->
 
-## 🎬 Demostración de On-going
+## 🎬 Demostración real — Envío de correos con AWS SES
 
 ![Demostración animada de On-going](docs/media/aws-finish.gif)
+
+**Qué muestra la grabación (revisada fotograma a fotograma):**
+
+1. En *Mis tareas* se pulsa «Enviar resumen por correo» y la app responde «Solicitud aceptada»: la Vercel Function
+   autenticó al usuario y **Amazon SES aceptó el envío**.
+2. En el buzón de Yahoo Mail aparece un mensaje de `mailer-daemon@us-east-2.amazonses.com` con el asunto
+   **«Delivery Status Notification (Failure)»**. Dentro está el contenido del resumen generado por On-going
+   (total, completadas, pendientes y progreso).
+
+> ⚠️ **Alcance de esta evidencia.** La grabación demuestra que la aplicación genera el resumen y que SES lo acepta.
+> **No demuestra una entrega exitosa a la bandeja de entrada**: el mensaje recibido es un aviso de fallo de entrega.
+> Hace falta una nueva grabación en la que llegue el correo original antes de afirmar la entrega.
 
 ## Vista previa
 
@@ -61,6 +73,17 @@ mascota 3D (un conejo en bicicleta) que acelera, frena y celebra cuando se compl
 | **Filtros** | Todas · Pendientes · Completadas, combinables con la búsqueda y con contadores por filtro. |
 | **Drag & drop** | Reordenamiento manual con `@dnd-kit` (mouse, táctil y **teclado**) y orden **persistido** en Firestore (campo `order`). |
 | **Prioridad y vencimiento** | Prioridad `alta / media / baja` y fecha límite (`AAAA-MM-DD`); orden por fecha, prioridad, creación, título o personalizado. |
+
+### Reportes
+- Cifras en tiempo real sobre las mismas tareas de Mis tareas (misma suscripción a Firestore): total, completadas,
+  pendientes, **vencidas** (pendientes con fecha pasada) y porcentaje completado.
+- Distribución por prioridad (barras con las cifras también en texto) y próximos vencimientos.
+- Sin evolución semanal: las tareas no guardan la fecha de finalización y no se inventan datos históricos.
+
+### Configuración
+- Datos de la cuenta: nombre visible, correo, método de acceso (Google o correo y contraseña) y estado de verificación.
+- **Orden predeterminado de Mis tareas**: se guarda por cuenta **en este navegador** (no se sincroniza entre dispositivos)
+  y se aplica al abrir Mis tareas. La vista «Tablero» aún no existe, por eso no hay preferencia de vista.
 
 ### Resumen de tareas por correo (AWS SES)
 - Botón para enviarte un resumen con totales, porcentaje de avance y las tareas pendientes más urgentes.
@@ -185,8 +208,9 @@ y no despliega nada (el despliegue sigue en Vercel).
 5. Envía el correo con **Amazon SES v2**. Las respuestas al navegador son genéricas.
 
 > ⚠️ **SES en Sandbox.** La cuenta de SES permanece en *Sandbox*: solo puede enviar desde y hacia direcciones
-> **verificadas**. El envío real se demostró con una cuenta verificada en AWS SES, y no está habilitado para cualquier
-> destinatario. Para eso hay que solicitar a AWS el acceso a producción.
+> **verificadas**, y no está habilitado para cualquier destinatario. Para eso hay que solicitar a AWS el acceso a
+> producción. Con una cuenta verificada SES aceptó el envío (ver la demostración), pero la entrega a la bandeja de
+> entrada no quedó demostrada: que SES acepte un mensaje no garantiza que el proveedor del destinatario lo entregue.
 
 Detalles operativos en [`docs/ONGOING-M4-007-email-setup.md`](docs/ONGOING-M4-007-email-setup.md).
 

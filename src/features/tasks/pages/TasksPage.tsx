@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router'
+import { usePreferences } from '@/features/preferences/usePreferences'
 import { TaskManager } from '../components/TaskManager'
 import { useTaskRepository } from '../hooks/useTaskRepository'
 import { useTasks } from '../hooks/useTasks'
@@ -10,7 +11,9 @@ import styles from './tasks-page.module.css'
 export function TasksPage() {
   const { repository, uid } = useTaskRepository()
   const { tasks, status, loadError, connected, create, update, remove, reorder } = useTasks(repository)
-  const view = useTaskView(tasks)
+  // El orden predeterminado elegido en Configuración es el punto de partida; cambiarlo aquí no lo sobrescribe.
+  const { preferences } = usePreferences()
+  const view = useTaskView(tasks, preferences.sort)
   const [params] = useSearchParams()
 
   return (

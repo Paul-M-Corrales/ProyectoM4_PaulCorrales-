@@ -24,7 +24,7 @@ describe('navegación privada', () => {
     await openPrivate('/inicio')
     await user.click(await screen.findByRole('link', { name: 'Reportes' }))
     expect(await screen.findByRole('heading', { name: 'Reportes' })).toBeInTheDocument()
-    expect(screen.getByText(/todavía no están conectadas/)).toBeInTheDocument()
+    expect(screen.getByText(/Cifras calculadas en tiempo real/)).toBeInTheDocument()
   })
 
   it('Reportes y Configuración son privadas', async () => {
