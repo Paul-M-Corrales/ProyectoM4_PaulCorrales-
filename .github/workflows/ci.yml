@@ -1,0 +1,86 @@
+name: CI
+
+# Solo validación. El despliegue lo hace Vercel (integración con Git); este workflow no despliega nada.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Permisos mínimos del GITHUB_TOKEN: solo lectura del repositorio.
+permissions:
+  contents: read
+
+# Cancela la ejecución anterior de la misma rama o PR cuando llega una nueva.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Lint, tipos, tests y build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24 # vitest 5 y jsdom 30 exigen Node 22.12+/24.15+; se prueba con 24
+          cache: npm
+
+      - name: Instalar dependencias (reproducible)
+        run: npm ci
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: TypeScript
+        run: npm run typecheck
+
+      - name: Tests (Vitest)
+        run: npm test
+
+      - name: Límite de 150 líneas por archivo
+        run: npm run check:lines
+
+      - name: Validar assets GLB
+        run: npm run check:glb
+
+      - name: Build de producción
+        run: npm run build
+
+  firestore-rules:
+    name: Reglas de Firestore (emulador)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # El emulador de Firestore necesita Java.
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Instalar dependencias (reproducible)
+        run: npm ci
+
+      # Evita descargar el JAR del emulador en cada ejecución.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # Proyecto demo (`demo-ongoing`): no usa credenciales ni toca ningún proyecto real de Firebase.
+      - name: Pruebas de reglas
+        run: npm run test:rules
