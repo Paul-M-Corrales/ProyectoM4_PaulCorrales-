@@ -38,7 +38,7 @@ mascota 3D (un conejo en bicicleta) que acelera, frena y celebra cuando se compl
 - On-going genera el resumen correctamente.
 - La función backend procesa la solicitud sin errores.
 - Amazon SES acepta el envío.
-- Yahoo/Rocketmail rechaza la entrega por una restricción de autenticación DMARC del dominio remitente, ajena a la generación del resumen y a su aceptación por Amazon SES.
+- El resumen llega correctamente a la bandeja de Gmail del usuario.
 
 ## Vista previa
 
